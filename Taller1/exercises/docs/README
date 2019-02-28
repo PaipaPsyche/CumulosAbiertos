@@ -1,0 +1,51 @@
+To All Interested Parties:
+
+A set of IRAF exercises is available for the novice user.  The exercises
+were developed under IRAF Version 2.10.2 but have been revised for IRAF
+Version 2.11. (Please be sure you are using the right version of these
+exercises for your IRAF installation.)  The exercises are complete with 
+datasets.  Exercises 2 and 4 share the same dataset; 2 reduces the data that 
+is then used in 4. Exercises 3 and 5 also share the same dataset; 3 must be 
+executed before 5. An image display is necessary for exercises 1 and 4, but 
+is optional for the others.  
+
+   1) intro  - an introduction to the basics of IRAF
+  
+   2) ccd1   - a look at CCD reductions for direct images
+
+   3) ccd2   - CCD reductions for spectroscopic data
+
+   4) phot   - an introduction to aperture photometry using APPHOT and the
+               steps for photometric calibration using PHOTCAL
+
+   5) spec   - the extraction and wavelength calibration of slit spectra from
+               2-d CCD images
+
+   6) dataio - an exercise in reading and writing tapes
+
+The exercises are available from the IRAF network archive as a compressed
+tar file.   The exercises assume that you have unpacked this file in your
+IRAF login directory. 
+
+      % ftp iraf.noao.edu (140.252.1.1)
+   ftp> log in as anonymous
+   ftp> use your email address as the password
+   ftp> cd iraf/misc
+   ftp> binary
+   ftp> get exer211.tar.Z
+   ftp> quit
+      % zcat exer211.tar.Z | tar -xf -
+
+The exercise instructions are in the exercises/docs directory, in both
+text and PostScript format.  The exercises assume one is using xgterm and
+ximtool.  The m92.ps file contains a chart of the field for M92 that is used
+in Exercise 4.  The spec.eps file contains a chart for identifying thorium 
+lines for the wavelength calibration in Exercise 5.
+
+Please direct any questions or concerns to jbarnes@noao.edu.
+
+Jeannette Barnes
+NOAO/IRAF
+jbarnes@noao.edu, 5355::jbarnes
+602-325-9381
+

@@ -1,0 +1,448 @@
+
+                          IRAF TUTORIAL SESSIONS
+
+                                Exercise 4.
+
+
+This exercise will lead you through some basic steps dealing with the
+measurement of instrumental magnitudes for a few stars and then the calibration
+of that data to a standard photometric system.  We will use tasks in the APPHOT
+and PHOTCAL packages.  We will be using the data that was processed in 
+exercise 2.; these were the M92 images, provided courtesy of Dr. George Jacoby. 
+These images should have been reduced using the CCDPROC task as part of that 
+exercise and should now be ready for doing photometry.
+
+We will assume that you are logged into IRAF in an xgterm window, or a similar
+graphics terminal emulator window.  This exercise also requires an image
+display for the aperture photometry section.
+
+Go to your IRAF home directory and then go to the subdirectory called phot in
+the exercises directory.
+
+          cl> cd
+          cl> cd exercises/phot
+
+There should be some IRAF images in this directory called m92*.imh.  We will
+do photometric measurements on the four images of M92, 2 through the V filter
+and 2 through the B filter.  Check to be sure the frames have been reduced - do
+you remember how to check that?
+
+          cl> dir
+          cl> imhead m92*.imh
+          cl> imhead m92010 l+            # what do you want to look for here?
+
+
+APERTURE PHOTOMETRY
+-------------------
+
+The first thing we want to do is fix up our image headers.  There are several
+bits of information that we will be using during the photometry phase of
+the reductions and we should check to be sure our headers are prepared 
+properly.  We will need the exposure time, the filter identification, and
+the airmass.  On closer inspection of one of our headers (that should still 
+be displayed on your screen), we see an EXPTIME keyword and a FILTERS keyword,
+but there does not appear to be any reference to airmass.
+
+Let us first set the AIRMASS keyword in our headers.  We can use the task
+SETAIRMASS in the ASTUTIL package to do this.  The information required
+by this task to compute the effective airmass for the exposures is in the 
+image headers.
+
+          cl> astutil
+          cl> phelp setairmass
+          cl> unlearn setairmass
+          cl> lpar setairmass
+          cl> setairmass m92*.imh update-   # type kpno when you are prompted
+                                              for the observatory - do these
+                                              airmass values look reasonable?
+          cl> setairmass m92*.imh
+          cl> imhead m92014 l+              # notice the new keywords added
+          cl> bye                           # unload the last package loaded
+
+Now we are ready to proceed with the aperture photometry measurements.  Load
+the DIGIPHOT and then the APPHOT packages.
+
+          cl> digiphot
+          cl> apphot
+
+We need to decide the size of our aperture radius for doing the photometry.
+This radius will depend on the FWHM of the stars.  We can measure the FWHM
+with IMEXAMINE.
+
+          cl> display m92010 1
+          cl> imexamine                     # put the cursor on a bright star
+              r                             # three values of the FWHM are
+                                              printed at the end of the status
+                                              line on the bottom of the plot -
+                                              each value was computed using a 
+                                              slightly different algorithm
+
+A good rule of thumb is that the aperture radius should be 4 or 5 times
+the size of the FWHM, to insure that we measure all of the light.  Since our
+FWHM is about 3.0 pixels that would indicate that we should use ~15 pixels for
+our aperture radius.  But since our stars are relatively faint we may want
+to consider using an aperture radius of 10 pixels.  Since we want to simplify
+things and use the same radius for all frames, let's verify that the FWHM is
+about the same for the other frames and that we will get all of the light
+through the 10 pixel aperture, continuing with our use of IMEXAMINE.
+
+              d                             # display m92011
+              r                             # measure a couple of stars
+              d                             # display m92014
+              r                             # measure a couple of stars
+              d                             # display m92015
+              r                             # measure a couple of stars
+              q                             # quit
+
+We will use the task QPHOT, in interactive mode, to measure some stars in the
+first field.  Run EPAR on the task and edit the parameters until they look
+like those below.
+
+          cl> unlearn apphot
+          cl> epar qphot
+
+ap> lpar qphot
+        image = "m92010"        Input image
+         cbox = 5.              Centering box width in pixels
+      annulus =                 Inner radius of sky annulus in pixels
+     dannulus =                 Width of the sky annulus in pixels
+    apertures = "10"            List of photometry apertures
+      (coords = "")             Coordinate list
+      (output = "default")      Results file
+    (plotfile = "")             Plot metacode file
+        (zmag = 25.)            Zero point of magnitude scale
+    (exposure = "exptime")      Exposure time image header keyword
+     (airmass = "airmass")      Airmass image header keyword
+      (filter = "filters")      Filter image header keyword
+     (obstime = "ut")           Time of observation image header keyword
+       (epadu = 14.)            Instrument gain
+ (interactive = yes)            Interactive mode
+    (radplots = no)             Plot the radial profiles in interactive mode
+     (verbose = no)             Print messages
+    (graphics = "stdgraph")     Graphics device
+     (display = "stdimage")     Display device
+   (icommands = "")             Image cursor: [x y wcs] key [cmd]
+   (gcommands = "")             Graphics cursor: [x y wcs] key [cmd]
+        (mode = "ql")  
+
+Now let's execute QPHOT.  We will determine the query parameters
+interactively so it is not critical how we respond to them at this time. 
+Let's set cbox=5, annulus=15, dannulus=10, apertures=10 for now.  The
+annulus is the radius of the inner sky annulus, and dannulus is the width.
+A chart of the field is in the file m92.ps in the docs directory (this file
+can be printed to a PostScript printer or viewed with a PostScript previewer) -
+we will only measure a few of the more isolated stars. 
+
+Side note: While you are in interactive cursor mode you must initiate commands 
+from the active window - there is only one active window at a time although
+you may be interacting with three windows during one task execution: the
+text window, the plot window, and the image display window.  If the image
+cursor is blinking then it is the active window.  If the text window has
+dumped some information to the screen and is waiting for a pagination command 
+or a "q", then it is the active window.  It may require a bit of practice to 
+acquire the "feel" of this.
+
+          cl> display m92010 1
+          cl> qphot m92010
+              ?                        # list cursor options
+              q
+              i                        # point at star 6 - image window 
+
+          [set the extraction box to 25 - plot window]
+
+          [then type "v" to select interactive setup mode - plot window]
+
+          [mark the centering box with the cursor (2.5 is ok), press "return",
+           now you can modify it if you want, let's round it to 5.]
+
+          [mark the inner sky radius, I think 15 is ok, press "return", now 
+           round to 15.]
+
+          [mark the outer sky radius at about 25, press "return", then round
+           the width to 10.]
+
+          [mark our aperture radius at 10, press "return", press "q", then 
+           round to 10.]
+
+              q                        # to exit this mode and return to image
+                                         window
+
+          [notice that photometric information is printed on your screen for
+           this star - center (x and y), sky, magnitude, error (if any)]
+
+          [now we will measure our stars looking at the radial profile plots
+           for each star as we do the measurement]
+
+              w                         # save the parameters that we just 
+                                          computed - image window
+              :radplot yes              # turn on the radial profile option -
+                                          notice that after you type the :
+                                          you may need to move the cursor from
+                                          the image window to the text window
+                                          to finish typing the command - move
+                                          back to the image window to continue
+
+          [measure, in order, stars 6, 9, 5, 8, 7, 23, 13, 20, 18 - point the 
+           cursor and press "space bar"]
+
+              q (in image window and in text window)
+
+All of your measurements should have been saved in a file - the image name
+plus .mag.1 appended.  Look at that file.  We can pull out selected
+information from this file with the TXDUMP command.  We can also plot the
+errors in the magnitudes against the magnitudes themselves to see if there
+is any trend.
+
+          cl> dir
+          cl> page m92010.mag.1
+          cl> lpar txdump
+          cl> txdump m92010.mag.1 image,xcenter,ycenter,mag,msky,stdev yes
+          cl> txdump m92010.mag.1 mag,merr yes | graph point+
+
+We can run QPHOT on our other three fields using a coordinate list as input
+and not run the task interactively.  But we need to look at one of the B fields
+first to be certain that there is not too large a shift between it and the V
+field that we just measured.
+
+          cl> display m92014 1
+
+          [look at star 6 and compare the coordinate readout in ximtool with
+          the position of the star in our TXDUMP list - there is roughly a
+          5.5 pixel shift in x - so I think we are ok.]
+
+Using TXDUMP let's create a coordinate list for our stars.  Notice that we
+could apply a shift to this list with the task LINTRAN in the LISTS package, if
+we needed to.  Let's plot the coordinates back up on the image to verify 
+our identifications.
+
+          cl> txdump m92010.mag.1 xcenter,ycenter yes > coords
+          cl> type coords
+          cl> display m92010 1
+          cl> tvmark 1 coords mark=circle radii=10 color=205
+
+Now edit the parameter file for QPHOT so it looks like the following.  We will 
+make the cbox parameter value a little bit larger to compensate for the shifts
+in our images.  
+
+          cl> epar qphot
+
+ap> lpar qphot
+        image = "m92011,m92014,m92015" Input image
+         cbox = 7.              Centering box width in pixels
+      annulus = 15.             Inner radius of sky annulus in pixels
+     dannulus = 10.             Width of the sky annulus in pixels
+    apertures = "10"            List of photometry apertures
+      (coords = "coords")       Coordinate list
+      (output = "default")      Results file
+    (plotfile = "")             Plot metacode file
+        (zmag = 25.)            Zero point of magnitude scale
+    (exposure = "exptime")      Exposure time image header keyword
+     (airmass = "airmass")      Airmass image header keyword
+      (filter = "filters")      Filter image header keyword
+     (obstime = "ut")           Time of observation image header keyword
+       (epadu = 14.)            Instrument gain
+ (interactive = no)             Interactive mode
+    (radplots = no)             Plot the radial profiles in interactive mode
+     (verbose = no)             Print messages
+    (graphics = "stdgraph")     Graphics device
+     (display = "stdimage")     Display device
+   (icommands = "")             Image cursor: [x y wcs] key [cmd]
+   (gcommands = "")             Graphics cursor: [x y wcs] key [cmd]
+        (mode = "ql")  
+
+          cl> qphot 
+          cl> dir *.mag*                 # there should be a mag file for
+                                           each image
+          cl> txdump m92*.mag.1 mag,merr yes | graph point+
+          cl> txdump *.mag* xcenter,ycenter,mag,merr,ifilter yes
+
+Inspect these lists.  Merr is the error associated with the magnitude
+measurement.  A few of these appear high - probably fainter stars?  Let's
+keep these values, however, we can throw them out later, if we wish.
+Notice that V=60 and B=50 for the filter ID.
+
+
+PHOTOMETRIC CALIBRATIONS 
+------------------------
+
+We are now ready to take the instrumental magnitudes that we just measured with 
+QPHOT and compute a transformation to the standard system using tasks in the
+PHOTCAL package.
+
+          cl> photcal
+          cl> unlearn photcal
+
+We will first need to create a file containing our standard star magnitudes.
+This is done with the task MKCATALOG.  This file already exists, however,
+in your directory - it is called stds; there is an associated file called
+fstds.dat that describes the format of the stds file.  As time permits you may
+want to experiment with MKCATALOG, duplicating what is already in stds, but
+be sure to call it another name.
+
+          cl> page stds
+          cl> page fstds.dat
+
+We will now need to create a file that contains a list of the image files that
+we measured with QPHOT, grouped together in data sets; each data set must
+contain an image through each of our filters so that we can compute V's and
+B-V's for each data set.  Your file should look like that below.
+
+          cl> edit imsets
+          cl> type imsets
+
+cl> type imsets
+M92 : m92010 m92014
+M92 : m92011 m92015
+
+Now we are ready to create the file that will contain the actual observations
+for the standards stars.  This task will pull out the instrumental magnitudes
+from our *.mag* files and group them according to our imsets file.  The
+filters have been identified as V=60 and B=50. 
+
+          cl> phelp mknobsfile
+          cl> epar mknobsfile
+
+ph> lpar mknobsfile
+    photfiles = "*.mag*"        The input list of APPHOT/DAOPHOT databases
+    idfilters = "60,50"         The list of filter ids
+       imsets = "imsets"        The input image set file
+ observations = "sobs"          The output observations file
+   (obsparams = "")             The input observing parameters file
+  (obscolumns = "2,3,4")        The format of obsparams
+   (minmagerr = 0.001)          The minimum error magnitude
+      (shifts = "")             The input x and y coordinate shifts file
+    (apercors = "")             The input aperture corrections file
+    (aperture = 1)              The aperture number of the extracted magnitude
+   (tolerance = 8.)             The tolerance in pixels for position matching
+  (allfilters = yes)            Output only objects matched in all filters
+      (verify = no)             Verify interactive user input ?
+     (verbose = yes)            Print status, warning and error messages ?
+        (mode = "ql")   
+
+          cl> mknobsfile
+
+Look at the sobs file.  We will need to edit this file now so that the
+names correspond to the correct entries in our stds file.  The order that
+we measured the stars was 6, 9, 5, 8, 7, 23, 13, 20, 18, corresponding to 
+1-9.
+     
+          cl> edit sobs
+
+The next step is to set up a configuration file with the task MKCONFIG.  This
+file will contain the equations that will be used to determine the photometric
+calibration as well as information describing the data in stds and sobs.  A
+file is already in your directory containing this information.  Again, as time
+permits you may want to experiment with MKCONFIG.
+
+          cl> phelp mkconfig
+          cl> type m92fig
+
+Now we are ready to compute the calibration function for V and B-V.  This
+is done using the task FITPARAMS.  This is an interactive task that allows us
+to examine the fits in a variety of ways.  Edit the parameters for this task
+so they look like those below, and then execute the task.
+
+          cl> phelp fitparams
+          cl> epar fitparams
+
+ph> lpar fitparams
+ observations = "sobs"          List of observations files
+     catalogs = "stds"          List of standard catalog files
+       config = "m92fig"        Configuration file
+   parameters = "calib"         Output parameters file
+   (weighting = "uniform")      Weighting type (uniform,photometric,equations)
+  (addscatter = yes)            Add a scatter term to the weights ?
+   (tolerance = 3.0000000000000E-5) Fit convergence tolerance
+     (maxiter = 15)             Maximum number of fit iterations
+     (nreject = 0)              Number of rejection iterations
+  (low_reject = 3.)             Low sigma rejection factor
+ (high_reject = 3.)             High sigma rejection factor
+        (grow = 0.)             Rejection growing radius
+ (interactive = yes)            Solve fit interactively ?
+     (logfile = "STDOUT")       Output log file
+(log_unmatche = yes)            Log any unmatched stars ?
+     (log_fit = no)             Log the fit parameters and statistics ?
+ (log_results = no)             Log the results ?
+      (catdir = "")             The standard star catalog directory
+    (graphics = "stdgraph")     Output graphics device
+      (cursor = "")             Graphics cursor input
+        (mode = "ql")     
+
+          cl> fitparams
+              ?
+
+              [you will first be shown the result of the fit for the V filter -
+              you can delete points, look at various outputs, redo the fit -
+              all while you are in cursor mode.  Try to minimize the residuals.]
+      
+              :vshow                  # show errors and results of fit
+              :results                # list results of current fit
+
+              q                       # go to "next" fit - the B filter
+
+              [again, experiment with this plot to minimize the residuals]
+
+              q                       # you go back to the "prev" fit if you
+                                        would like or exit the task - be sure
+                                        to save your last good fits.
+             
+          cl> page calib
+
+Notice the values of the coefficients that were computed and compare them
+to the ones that we originally used.  The task FITPARAMS allows you to modify
+the various coefficients during the fitting process, so you can do quite a 
+bit of experimenting.  Of course, you would really like to have sufficient
+standards so that you could compute all coefficients - for these data we
+did not have sufficient airmass range so we needed to set the extinction 
+coefficients to constant values.
+
+The last step in this exercise is to actually apply the calibration to the
+instrumental magnitudes for our standard stars in the file sobs.  This
+is done with the task INVERTFIT.  Modify the task parameters so they look
+like those below.
+
+          cl> epar invertfit
+
+cl> lpar invertfit
+ observations = "sobs"          List of observations files
+       config = "m92fig"        Configuration file
+   parameters = "calib"         Fitted parameters file
+        calib = "results"       Output calibrated standard indices file
+    (catalogs = "stds")         List of standard catalog files
+      (errors = "obserrors")    Error computation type (undefined,obserrors,equ
+     (objects = "all")          Objects to be fit (all,program,standards)
+       (print = "")             Optional list of variables to print
+      (format = "")             Optional output format string
+      (append = no)             Append output to an existing file ?
+      (catdir = "")             The standard star catalog directory
+        (mode = "ql")    
+
+          cl> invertfit
+          cl> page results
+
+As an exercise the user can go back and measure the same stars with QPHOT
+but through a larger aperture to see if this makes a difference.  Notice
+that several apertures can be measured at the same time with QPHOT, and the
+task MKNOBSFILE allows you to select the aperture that you want to use for
+subsequent processing (the aperture parameter).
+
+Similar steps would be taken with program fields omitting those steps
+that were unique to the standard stars.
+
+-------------------------------------------------------------------------------
+
+                                 References
+
+A User's Guide to Stellar CCD Photometry with IRAF, by Philip Massey and 
+Lindsey E. Davis, April 1992.
+
+A User's Guide to the IRAF Apphot Package, by Lindsey Elspeth Davis, May 1989.
+
+Specifications for the Aperture Photometry Package, Lindsey Davis, 
+October 1987.
+
+Online help is available for all tasks.  Especially see "phelp config"
+and "phelp pcintro" in the PHOTCAL package.
+
+
+-------------------------------end of exercise---------------------------------

@@ -1,0 +1,445 @@
+%!PS-Adobe-3.0
+%%Creator: enscript
+%%For: SunOS:jbarnes (J Barnes)
+%%Title: photom.txt
+%%CreationDate: Tue Oct  7 07:08:06 1997
+%%DocumentNeededResources: font Courier-Bold Courier
+%%Pages: (atend)
+%%BeginProlog
+% Start of enscript.pro -- prolog for text file translator
+% Copyright (c) 1984,1985,1987 Adobe Systems Incorporated. All Rights Reserved. 
+% GOVERNMENT END USERS: See Notice file in TranScript library directory
+% -- probably /usr/lib/ps/Notice
+% RCSID: $Header: /disks/hobo/vp6/snichols/rel4.0/src/transcript/lib/RCS/enscript.pro,v 4.0 1992/08/21 15:38:20 snichols Exp $
+/$enscript 50 dict def $enscript begin
+/S/show load def
+/bd { bind def } bind def
+/X{exch 0 rmoveto S} bd
+/Y{exch 0 exch rmoveto S} bd
+/B{3 1 roll moveto S} bd
+/F{$fd exch get setfont} def
+/U{1440 mul}def
+/UP{U 72 div}def
+/StartPage{/svpg save def .05 dup scale} bd
+/EndPage{svpg restore showpage} bd
+/DoPreFeed{/statusdict where{pop
+ statusdict/prefeed known{statusdict exch/prefeed exch put 0}if}if pop} bd
+/SetUpFonts
+ {dup/$fd exch array def{findfont exch scalefont $fd 3 1 roll put}repeat}def
+/InitGaudy{/Columns exch def
+ /ftD /Times-Bold findfont 12 UP scalefont def
+ /ftF /Times-Roman findfont 14 UP scalefont def
+ /ftP /Helvetica-Bold findfont 30 UP scalefont def} bd
+/LB{/pts exch UP def /charcolor exch def /boxcolor exch def /font exch def
+ /label exch def /dy exch def /dx exch def /lly exch def /llx exch def
+ gsave boxcolor setgray
+ llx lly moveto dx 0 rlineto 0 dy rlineto dx neg 0 rlineto closepath fill
+ /lines label length def
+ /yp lly dy add dy lines pts mul sub 2 div sub pts .85 mul sub def
+ font setfont charcolor setgray
+ label {dup stringwidth pop 2 div llx dx 2 div add exch sub yp moveto show
+   /yp yp pts sub def}forall grestore} bd
+/Gaudy{/plength exch def /BarLength exch def /hy exch def /hx exch def
+ /Page exch def /Date exch def  /File exch def /Comment exch def
+ hx hy  BarLength 144 sub .25 U [File] ftF .97 0 14 LB
+ hx hy 360 add BarLength 144 sub .25 U [Comment] ftF 1 0 14 LB
+ hx hy 1 U .5 U Date ftD .7 0 12 LB
+ BarLength 1080 sub hy 1 U .5 U [Page] ftP .7 1 30 LB
+ 2 1 Columns {1 sub plength Columns div mul 172.80 sub hy moveto 0 0 hy sub rlineto
+ stroke}for } bd
+/Landscape { 90 rotate 0 exch translate } bd
+%%EndProlog
+%%BeginSetup
+%%IncludeResource: font Courier-Bold
+1    200.000 /Courier-Bold
+%%IncludeResource: font Courier
+0    140.000 /Courier
+2 SetUpFonts
+%%EndSetup
+%%Page: ? 1
+StartPage
+-12240 Landscape
+1 F
+360 11530 (photom.txt        Mon Oct  6 16:46:23 1997        1)B
+0 F
+2544 11050(IRAF TUTORIAL SESSIONS)B
+3048 10730(Exercise 4.)B
+360 10250(This exercise will lead you through some basic steps dealing with the)B
+360 10090(measurement of instrumental magnitudes for a few stars and then the calibration)B
+360 9930(of that data to a standard photometric system.  We will use tasks in the APPHOT)B
+360 9770(and PHOTCAL packages.  We will be using the data that was processed in )B
+360 9610(exercise 2.; these were the M92 images, provided courtesy of Dr. George Jacoby. )B
+360 9450(These images should have been reduced using the CCDPROC task as part of that )B
+360 9290(exercise and should now be ready for doing photometry.)B
+360 8970(We will assume that you are logged into IRAF in an xgterm window, or a similar)B
+360 8810(graphics terminal emulator window.  This exercise also requires an image)B
+360 8650(display for the aperture photometry section.)B
+360 8330(Go to your IRAF home directory and then go to the subdirectory called phot in)B
+360 8170(the exercises directory.)B
+1200 7850(cl> cd)B
+1200 7690(cl> cd exercises/phot)B
+360 7370(There should be some IRAF images in this directory called m92*.imh.  We will)B
+360 7210(do photometric measurements on the four images of M92, 2 through the V filter)B
+360 7050(and 2 through the B filter.  Check to be sure the frames have been reduced - do)B
+360 6890(you remember how to check that?)B
+1200 6570(cl> dir)B
+1200 6410(cl> imhead m92*.imh)B
+1200 6250(cl> imhead m92010 l+            # what do you want to look for here?)B
+360 5770(APERTURE PHOTOMETRY)B
+360 5610(-------------------)B
+360 5290(The first thing we want to do is fix up our image headers.  There are several)B
+360 5130(bits of information that we will be using during the photometry phase of)B
+360 4970(the reductions and we should check to be sure our headers are prepared )B
+360 4810(properly.  We will need the exposure time, the filter identification, and)B
+360 4650(the airmass.  On closer inspection of one of our headers \(that should still )B
+360 4490(be displayed on your screen\), we see an EXPTIME keyword and a FILTERS keyword,)B
+360 4330(but there does not appear to be any reference to airmass.)B
+360 4010(Let us first set the AIRMASS keyword in our headers.  We can use the task)B
+360 3850(SETAIRMASS in the ASTUTIL package to do this.  The information required)B
+360 3690(by this task to compute the effective airmass for the exposures is in the )B
+360 3530(image headers.)B
+1200 3210(cl> astutil)B
+1200 3050(cl> phelp setairmass)B
+1200 2890(cl> unlearn setairmass)B
+1200 2730(cl> lpar setairmass)B
+1200 2570(cl> setairmass m92*.imh update-   # type kpno when you are prompted)B
+4224 2410(for the observatory - do these)B
+4224 2250(airmass values look reasonable?)B
+1200 2090(cl> setairmass m92*.imh)B
+1200 1930(cl> imhead m92014 l+              # notice the new keywords added)B
+1200 1770(cl> bye                           # unload the last package loaded)B
+360 1450(Now we are ready to proceed with the aperture photometry measurements.  Load)B
+360 1290(the DIGIPHOT and then the APPHOT packages.)B
+1200 970(cl> digiphot)B
+1200 810(cl> apphot)B
+7920 11210(We need to decide the size of our aperture radius for doing the photometry.)B
+7920 11050(This radius will depend on the FWHM of the stars.  We can measure the FWHM)B
+7920 10890(with IMEXAMINE.)B
+8760 10570(cl> display m92010 1)B
+8760 10410(cl> imexamine                     # put the cursor on a bright star)B
+9096 10250(r                             # three values of the FWHM are)B
+11784 10090(printed at the end of the status)B
+11784 9930(line on the bottom of the plot -)B
+11784 9770(each value was computed using a )B
+11784 9610(slightly different algorithm)B
+7920 9290(A good rule of thumb is that the aperture radius should be 4 or 5 times)B
+7920 9130(the size of the FWHM, to insure that we measure all of the light.  Since our)B
+7920 8970(FWHM is about 3.0 pixels that would indicate that we should use ~15 pixels for)B
+7920 8810(our aperture radius.  But since our stars are relatively faint we may want)B
+7920 8650(to consider using an aperture radius of 10 pixels.  Since we want to simplify)B
+7920 8490(things and use the same radius for all frames, let's verify that the FWHM is)B
+7920 8330(about the same for the other frames and that we will get all of the light)B
+7920 8170(through the 10 pixel aperture, continuing with our use of IMEXAMINE.)B
+9096 7850(d                             # display m92011)B
+9096 7690(r                             # measure a couple of stars)B
+9096 7530(d                             # display m92014)B
+9096 7370(r                             # measure a couple of stars)B
+9096 7210(d                             # display m92015)B
+9096 7050(r                             # measure a couple of stars)B
+9096 6890(q                             # quit)B
+7920 6570(We will use the task QPHOT, in interactive mode, to measure some stars in the)B
+7920 6410(first field.  Run EPAR on the task and edit the parameters until they look)B
+7920 6250(like those below.)B
+8760 5930(cl> unlearn apphot)B
+8760 5770(cl> epar qphot)B
+7920 5450(ap> lpar qphot)B
+8592 5290(image = "m92010"        Input image)B
+8676 5130(cbox = 5.              Centering box width in pixels)B
+8424 4970(annulus =                 Inner radius of sky annulus in pixels)B
+8340 4810(dannulus =                 Width of the sky annulus in pixels)B
+8256 4650(apertures = "10"            List of photometry apertures)B
+8424 4490(\(coords = ""\)             Coordinate list)B
+8424 4330(\(output = "default"\)      Results file)B
+8256 4170(\(plotfile = ""\)             Plot metacode file)B
+8592 4010(\(zmag = 25.\)            Zero point of magnitude scale)B
+8256 3850(\(exposure = "exptime"\)      Exposure time image header keyword)B
+8340 3690(\(airmass = "airmass"\)      Airmass image header keyword)B
+8424 3530(\(filter = "filters"\)      Filter image header keyword)B
+8340 3370(\(obstime = "ut"\)           Time of observation image header keyword)B
+8508 3210(\(epadu = 14.\)            Instrument gain)B
+8004 3050(\(interactive = yes\)            Interactive mode)B
+8256 2890(\(radplots = no\)             Plot the radial profiles in interactive mode)B
+8340 2730(\(verbose = no\)             Print messages)B
+8256 2570(\(graphics = "stdgraph"\)     Graphics device)B
+8340 2410(\(display = "stdimage"\)     Display device)B
+8172 2250(\(icommands = ""\)             Image cursor: [x y wcs] key [cmd])B
+8172 2090(\(gcommands = ""\)             Graphics cursor: [x y wcs] key [cmd])B
+8592 1930(\(mode = "ql"\)  )B
+7920 1610(Now let's execute QPHOT.  We will determine the query parameters)B
+7920 1450(interactively so it is not critical how we respond to them at this time. )B
+7920 1290(Let's set cbox=5, annulus=15, dannulus=10, apertures=10 for now.  The)B
+7920 1130(annulus is the radius of the inner sky annulus, and dannulus is the width.)B
+7920 970(A chart of the field is in the file m92.ps in the docs directory \(this file)B
+7920 810(can be printed to a PostScript printer or viewed with a PostScript previewer\) -)B
+7920 650(we will only measure a few of the more isolated stars. )B
+EndPage
+%%Page: ? 2
+StartPage
+-12240 Landscape
+1 F
+360 11530 (photom.txt        Mon Oct  6 16:46:23 1997        2)B
+0 F
+360 11050(Side note: While you are in interactive cursor mode you must initiate commands )B
+360 10890(from the active window - there is only one active window at a time although)B
+360 10730(you may be interacting with three windows during one task execution: the)B
+360 10570(text window, the plot window, and the image display window.  If the image)B
+360 10410(cursor is blinking then it is the active window.  If the text window has)B
+360 10250(dumped some information to the screen and is waiting for a pagination command )B
+360 10090(or a "q", then it is the active window.  It may require a bit of practice to )B
+360 9930(acquire the "feel" of this.)B
+1200 9610(cl> display m92010 1)B
+1200 9450(cl> qphot m92010)B
+1536 9290(?                        # list cursor options)B
+1536 9130(q)B
+1536 8970(i                        # point at star 6 - image window )B
+1200 8650([set the extraction box to 25 - plot window])B
+1200 8330([then type "v" to select interactive setup mode - plot window])B
+1200 8010([mark the centering box with the cursor \(2.5 is ok\), press "return",)B
+1284 7850(now you can modify it if you want, let's round it to 5.])B
+1200 7530([mark the inner sky radius, I think 15 is ok, press "return", now )B
+1284 7370(round to 15.])B
+1200 7050([mark the outer sky radius at about 25, press "return", then round)B
+1284 6890(the width to 10.])B
+1200 6570([mark our aperture radius at 10, press "return", press "q", then )B
+1284 6410(round to 10.])B
+1536 6090(q                        # to exit this mode and return to image)B
+3804 5930(window)B
+1200 5610([notice that photometric information is printed on your screen for)B
+1284 5450(this star - center \(x and y\), sky, magnitude, error \(if any\)])B
+1200 5130([now we will measure our stars looking at the radial profile plots)B
+1284 4970(for each star as we do the measurement])B
+1536 4650(w                         # save the parameters that we just )B
+3888 4490(computed - image window)B
+1536 4330(:radplot yes              # turn on the radial profile option -)B
+3888 4170(notice that after you type the :)B
+3888 4010(you may need to move the cursor from)B
+3888 3850(the image window to the text window)B
+3888 3690(to finish typing the command - move)B
+3888 3530(back to the image window to continue)B
+1200 3210([measure, in order, stars 6, 9, 5, 8, 7, 23, 13, 20, 18 - point the )B
+1284 3050(cursor and press "space bar"])B
+1536 2730(q \(in image window and in text window\))B
+360 2410(All of your measurements should have been saved in a file - the image name)B
+360 2250(plus .mag.1 appended.  Look at that file.  We can pull out selected)B
+360 2090(information from this file with the TXDUMP command.  We can also plot the)B
+360 1930(errors in the magnitudes against the magnitudes themselves to see if there)B
+360 1770(is any trend.)B
+1200 1450(cl> dir)B
+1200 1290(cl> page m92010.mag.1)B
+1200 1130(cl> lpar txdump)B
+1200 970(cl> txdump m92010.mag.1 image,xcenter,ycenter,mag,msky,stdev yes)B
+1200 810(cl> txdump m92010.mag.1 mag,merr yes | graph point+)B
+7920 11210(We can run QPHOT on our other three fields using a coordinate list as input)B
+7920 11050(and not run the task interactively.  But we need to look at one of the B fields)B
+7920 10890(first to be certain that there is not too large a shift between it and the V)B
+7920 10730(field that we just measured.)B
+8760 10410(cl> display m92014 1)B
+8760 10090([look at star 6 and compare the coordinate readout in ximtool with)B
+8760 9930(the position of the star in our TXDUMP list - there is roughly a)B
+8760 9770(5.5 pixel shift in x - so I think we are ok.])B
+7920 9450(Using TXDUMP let's create a coordinate list for our stars.  Notice that we)B
+7920 9290(could apply a shift to this list with the task LINTRAN in the LISTS package, if)B
+7920 9130(we needed to.  Let's plot the coordinates back up on the image to verify )B
+7920 8970(our identifications.)B
+8760 8650(cl> txdump m92010.mag.1 xcenter,ycenter yes > coords)B
+8760 8490(cl> type coords)B
+8760 8330(cl> display m92010 1)B
+8760 8170(cl> tvmark 1 coords mark=circle radii=10 color=205)B
+7920 7850(Now edit the parameter file for QPHOT so it looks like the following.  We will )B
+7920 7690(make the cbox parameter value a little bit larger to compensate for the shifts)B
+7920 7530(in our images.  )B
+8760 7210(cl> epar qphot)B
+7920 6890(ap> lpar qphot)B
+8592 6730(image = "m92011,m92014,m92015" Input image)B
+8676 6570(cbox = 7.              Centering box width in pixels)B
+8424 6410(annulus = 15.             Inner radius of sky annulus in pixels)B
+8340 6250(dannulus = 10.             Width of the sky annulus in pixels)B
+8256 6090(apertures = "10"            List of photometry apertures)B
+8424 5930(\(coords = "coords"\)       Coordinate list)B
+8424 5770(\(output = "default"\)      Results file)B
+8256 5610(\(plotfile = ""\)             Plot metacode file)B
+8592 5450(\(zmag = 25.\)            Zero point of magnitude scale)B
+8256 5290(\(exposure = "exptime"\)      Exposure time image header keyword)B
+8340 5130(\(airmass = "airmass"\)      Airmass image header keyword)B
+8424 4970(\(filter = "filters"\)      Filter image header keyword)B
+8340 4810(\(obstime = "ut"\)           Time of observation image header keyword)B
+8508 4650(\(epadu = 14.\)            Instrument gain)B
+8004 4490(\(interactive = no\)             Interactive mode)B
+8256 4330(\(radplots = no\)             Plot the radial profiles in interactive mode)B
+8340 4170(\(verbose = no\)             Print messages)B
+8256 4010(\(graphics = "stdgraph"\)     Graphics device)B
+8340 3850(\(display = "stdimage"\)     Display device)B
+8172 3690(\(icommands = ""\)             Image cursor: [x y wcs] key [cmd])B
+8172 3530(\(gcommands = ""\)             Graphics cursor: [x y wcs] key [cmd])B
+8592 3370(\(mode = "ql"\)  )B
+8760 3050(cl> qphot )B
+8760 2890(cl> dir *.mag*                 # there should be a mag file for)B
+11532 2730(each image)B
+8760 2570(cl> txdump m92*.mag.1 mag,merr yes | graph point+)B
+8760 2410(cl> txdump *.mag* xcenter,ycenter,mag,merr,ifilter yes)B
+7920 2090(Inspect these lists.  Merr is the error associated with the magnitude)B
+7920 1930(measurement.  A few of these appear high - probably fainter stars?  Let's)B
+7920 1770(keep these values, however, we can throw them out later, if we wish.)B
+7920 1610(Notice that V=60 and B=50 for the filter ID.)B
+7920 1130(PHOTOMETRIC CALIBRATIONS )B
+7920 970(------------------------)B
+7920 650(We are now ready to take the instrumental magnitudes that we just measured with )B
+EndPage
+%%Page: ? 3
+StartPage
+-12240 Landscape
+1 F
+360 11530 (photom.txt        Mon Oct  6 16:46:23 1997        3)B
+0 F
+360 11210(QPHOT and compute a transformation to the standard system using tasks in the)B
+360 11050(PHOTCAL package.)B
+1200 10730(cl> photcal)B
+1200 10570(cl> unlearn photcal)B
+360 10250(We will first need to create a file containing our standard star magnitudes.)B
+360 10090(This is done with the task MKCATALOG.  This file already exists, however,)B
+360 9930(in your directory - it is called stds; there is an associated file called)B
+360 9770(fstds.dat that describes the format of the stds file.  As time permits you may)B
+360 9610(want to experiment with MKCATALOG, duplicating what is already in stds, but)B
+360 9450(be sure to call it another name.)B
+1200 9130(cl> page stds)B
+1200 8970(cl> page fstds.dat)B
+360 8650(We will now need to create a file that contains a list of the image files that)B
+360 8490(we measured with QPHOT, grouped together in data sets; each data set must)B
+360 8330(contain an image through each of our filters so that we can compute V's and)B
+360 8170(B-V's for each data set.  Your file should look like that below.)B
+1200 7850(cl> edit imsets)B
+1200 7690(cl> type imsets)B
+360 7370(cl> type imsets)B
+360 7210(M92 : m92010 m92014)B
+360 7050(M92 : m92011 m92015)B
+360 6730(Now we are ready to create the file that will contain the actual observations)B
+360 6570(for the standards stars.  This task will pull out the instrumental magnitudes)B
+360 6410(from our *.mag* files and group them according to our imsets file.  The)B
+360 6250(filters have been identified as V=60 and B=50. )B
+1200 5930(cl> phelp mknobsfile)B
+1200 5770(cl> epar mknobsfile)B
+360 5450(ph> lpar mknobsfile)B
+696 5290(photfiles = "*.mag*"        The input list of APPHOT/DAOPHOT databases)B
+696 5130(idfilters = "60,50"         The list of filter ids)B
+948 4970(imsets = "imsets"        The input image set file)B
+444 4810(observations = "sobs"          The output observations file)B
+612 4650(\(obsparams = ""\)             The input observing parameters file)B
+528 4490(\(obscolumns = "2,3,4"\)        The format of obsparams)B
+612 4330(\(minmagerr = 0.001\)          The minimum error magnitude)B
+864 4170(\(shifts = ""\)             The input x and y coordinate shifts file)B
+696 4010(\(apercors = ""\)             The input aperture corrections file)B
+696 3850(\(aperture = 1\)              The aperture number of the extracted magnitude)B
+612 3690(\(tolerance = 8.\)             The tolerance in pixels for position matching)B
+528 3530(\(allfilters = yes\)            Output only objects matched in all filters)B
+864 3370(\(verify = no\)             Verify interactive user input ?)B
+780 3210(\(verbose = yes\)            Print status, warning and error messages ?)B
+1032 3050(\(mode = "ql"\)   )B
+1200 2730(cl> mknobsfile)B
+360 2410(Look at the sobs file.  We will need to edit this file now so that the)B
+360 2250(names correspond to the correct entries in our stds file.  The order that)B
+360 2090(we measured the stars was 6, 9, 5, 8, 7, 23, 13, 20, 18, corresponding to )B
+360 1930(1-9.)B
+1200 1610(cl> edit sobs)B
+360 1290(The next step is to set up a configuration file with the task MKCONFIG.  This)B
+360 1130(file will contain the equations that will be used to determine the photometric)B
+360 970(calibration as well as information describing the data in stds and sobs.  A)B
+360 810(file is already in your directory containing this information.  Again, as time)B
+360 650(permits you may want to experiment with MKCONFIG.)B
+8760 11050(cl> phelp mkconfig)B
+8760 10890(cl> type m92fig)B
+7920 10570(Now we are ready to compute the calibration function for V and B-V.  This)B
+7920 10410(is done using the task FITPARAMS.  This is an interactive task that allows us)B
+7920 10250(to examine the fits in a variety of ways.  Edit the parameters for this task)B
+7920 10090(so they look like those below, and then execute the task.)B
+8760 9770(cl> phelp fitparams)B
+8760 9610(cl> epar fitparams)B
+7920 9290(ph> lpar fitparams)B
+8004 9130(observations = "sobs"          List of observations files)B
+8340 8970(catalogs = "stds"          List of standard catalog files)B
+8508 8810(config = "m92fig"        Configuration file)B
+8172 8650(parameters = "calib"         Output parameters file)B
+8172 8490(\(weighting = "uniform"\)      Weighting type \(uniform,photometric,equations\))B
+8088 8330(\(addscatter = yes\)            Add a scatter term to the weights ?)B
+8172 8170(\(tolerance = 3.0000000000000E-5\) Fit convergence tolerance)B
+8340 8010(\(maxiter = 15\)             Maximum number of fit iterations)B
+8340 7850(\(nreject = 0\)              Number of rejection iterations)B
+8088 7690(\(low_reject = 3.\)             Low sigma rejection factor)B
+8004 7530(\(high_reject = 3.\)             High sigma rejection factor)B
+8592 7370(\(grow = 0.\)             Rejection growing radius)B
+8004 7210(\(interactive = yes\)            Solve fit interactively ?)B
+8340 7050(\(logfile = "STDOUT"\)       Output log file)B
+7920 6890(\(log_unmatche = yes\)            Log any unmatched stars ?)B
+8340 6730(\(log_fit = no\)             Log the fit parameters and statistics ?)B
+8004 6570(\(log_results = no\)             Log the results ?)B
+8424 6410(\(catdir = ""\)             The standard star catalog directory)B
+8256 6250(\(graphics = "stdgraph"\)     Output graphics device)B
+8424 6090(\(cursor = ""\)             Graphics cursor input)B
+8592 5930(\(mode = "ql"\)     )B
+8760 5610(cl> fitparams)B
+9096 5450(?)B
+9096 5130([you will first be shown the result of the fit for the V filter -)B
+9096 4970(you can delete points, look at various outputs, redo the fit -)B
+9096 4810(all while you are in cursor mode.  Try to minimize the residuals.])B
+9096 4490(:vshow                  # show errors and results of fit)B
+9096 4330(:results                # list results of current fit)B
+9096 4010(q                       # go to "next" fit - the B filter)B
+9096 3690([again, experiment with this plot to minimize the residuals])B
+9096 3370(q                       # you go back to the "prev" fit if you)B
+11280 3210(would like or exit the task - be sure)B
+11280 3050(to save your last good fits.)B
+8760 2730(cl> page calib)B
+7920 2410(Notice the values of the coefficients that were computed and compare them)B
+7920 2250(to the ones that we originally used.  The task FITPARAMS allows you to modify)B
+7920 2090(the various coefficients during the fitting process, so you can do quite a )B
+7920 1930(bit of experimenting.  Of course, you would really like to have sufficient)B
+7920 1770(standards so that you could compute all coefficients - for these data we)B
+7920 1610(did not have sufficient airmass range so we needed to set the extinction )B
+7920 1450(coefficients to constant values.)B
+7920 1130(The last step in this exercise is to actually apply the calibration to the)B
+7920 970(instrumental magnitudes for our standard stars in the file sobs.  This)B
+7920 810(is done with the task INVERTFIT.  Modify the task parameters so they look)B
+7920 650(like those below.)B
+EndPage
+%%Page: ? 4
+StartPage
+-12240 Landscape
+1 F
+360 11530 (photom.txt        Mon Oct  6 16:46:23 1997        4)B
+0 F
+1200 11050(cl> epar invertfit)B
+360 10730(cl> lpar invertfit)B
+444 10570(observations = "sobs"          List of observations files)B
+948 10410(config = "m92fig"        Configuration file)B
+612 10250(parameters = "calib"         Fitted parameters file)B
+1032 10090(calib = "results"       Output calibrated standard indices file)B
+696 9930(\(catalogs = "stds"\)         List of standard catalog files)B
+864 9770(\(errors = "obserrors"\)    Error computation type \(undefined,obserrors,equ)B
+780 9610(\(objects = "all"\)          Objects to be fit \(all,program,standards\))B
+948 9450(\(print = ""\)             Optional list of variables to print)B
+864 9290(\(format = ""\)             Optional output format string)B
+864 9130(\(append = no\)             Append output to an existing file ?)B
+864 8970(\(catdir = ""\)             The standard star catalog directory)B
+1032 8810(\(mode = "ql"\)    )B
+1200 8490(cl> invertfit)B
+1200 8330(cl> page results)B
+360 8010(As an exercise the user can go back and measure the same stars with QPHOT)B
+360 7850(but through a larger aperture to see if this makes a difference.  Notice)B
+360 7690(that several apertures can be measured at the same time with QPHOT, and the)B
+360 7530(task MKNOBSFILE allows you to select the aperture that you want to use for)B
+360 7370(subsequent processing \(the aperture parameter\).)B
+360 7050(Similar steps would be taken with program fields omitting those steps)B
+360 6890(that were unique to the standard stars.)B
+360 6570(-------------------------------------------------------------------------------)B
+3132 6250(References)B
+360 5930(A User's Guide to Stellar CCD Photometry with IRAF, by Philip Massey and )B
+360 5770(Lindsey E. Davis, April 1992.)B
+360 5450(A User's Guide to the IRAF Apphot Package, by Lindsey Elspeth Davis, May 1989.)B
+360 5130(Specifications for the Aperture Photometry Package, Lindsey Davis, )B
+360 4970(October 1987.)B
+360 4650(Online help is available for all tasks.  Especially see "phelp config")B
+360 4490(and "phelp pcintro" in the PHOTCAL package.)B
+360 4010(-------------------------------end of exercise---------------------------------)B
+EndPage
+%%Trailer
+end
+%%Pages: 4

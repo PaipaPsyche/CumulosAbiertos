@@ -1,0 +1,206 @@
+
+                          IRAF TUTORIAL SESSIONS
+
+                                Exercise 6.
+
+
+In this exercise we will acquaint you with some IRAF tools for reading
+and writing data to tape and disk.  We will assume that you are logged into
+IRAF in an xgterm window, or a similar graphics terminal emulator window.
+
+Go to your IRAF home directory and then go to the subdirectory called dataio
+in the exercises directory.
+
+          cl> cd
+          cl> cd exercises/dataio
+
+As in the previous exercises, some images exist in this directory as FITS 
+files, the standard format for the transporting of astronomical image data.
+Although the IRAF image format was made host independent with IRAF V2.11, it
+is not necessarily a good format for data exchange.  Thus the usual way to 
+import/export data to/from IRAF is through the FITS format.  Two tasks in 
+the DATAIO package are used for this purpose, RFITS and WFITS.  Let's convert 
+our FITS files to the IRAF image format.  The "old+" parameter restores the 
+IRAF image name to the previous name that it had on disk if the FITS image 
+was written with WFITS in IRAF.  Otherwise the specified output image name 
+is used.
+
+          cl> dir
+          cl> unlearn dataio        # unlearn all tasks in DATAIO package
+          cl> lpar rfits
+          cl> rfits fits* "" junk old+
+          cl> imhead *.imh
+
+Both RFITS and WFITS support the reading and writing of data to disk or tape,
+as shown in the previous RFITS example.  Let's use WFITS to write an IRAF
+image to a FITS image on disk, and then look at the FITS header with RFITS.
+
+          cl> lpar wfits
+          cl> wfits sp0027.ms ftest 
+          cl> rfits ftest.fits "" make- long+ | page
+
+Both of these tasks are quite clever.  RFITS creates an IRAF image on output
+with a pixel type that is compatible with the way the data was stored in
+the FITS image.  So if the FITS image contains 16-bit unscaled data then
+the default IRAF image will contain 16-bit data (short).  If the FITS image 
+contains scaled data or IEEE formatted data then the resultant IRAF image
+will be 32-bit floating point (real).   WFITS will write 16-bit unscaled data
+to the FITS image if the IRAF image contains 16-bit (short) data.  If the
+IRAF image contains 32-bit (real) data then WFITS will write IEEE formatted
+data to the FITS file.  These defaults can be overridden, of course, but it
+is rarely necessary or advised to do so.
+
+Tape drives are generally known to IRAF as mta, mtb, etc.  These names
+are defined in the dev$tapecap file that was configured for your site.  We
+will use mta throughout this exercise to refer to a tape drive - you may
+need to substitute the correct name for the drive you are using.  If your
+tape drive is on another machine and available through IRAF networking then
+you need to address the drive as node!mta, where node is the name of the
+host machine.
+
+          cl> allocate mta          # now load a scratch tape in the drive
+          cl> rewind mta            # rewinds the tape
+          cl> devstatus mta         # gives status of tape
+
+Let's write all of the images in the this directory to tape.  We will use
+the defaults for WFITS.  Note the terminal output during the writing of
+each image that describes the output format.  The data written with 
+"bitpix=16" and no scaling is written as 16-bit integer data on the tape;
+the data described with "bitpix=-32" is written as IEEE floating point
+data in the FITS image.  Compare this output to the pixel types noted
+in the IMHEADER output for these same images.
+
+          cl> lpar wfits
+          cl> imhead *.imh
+          cl> wfits *.imh mta new+
+
+Now write one image to tape forcing the data to be scaled to fit the full
+dynamic range of 16-bits.  The scaling parameters are written to the FITS
+header so the data can later be restored to the original values when it is
+read back in.
+
+          cl> wfits sp0023 mta new- bitpix=16
+
+IRAF keeps track of the tape position internally.  A double EOF is left
+on the tape at the completion of each tape writing command.  We should now 
+have 6 FITS files on the tape;  we will actually be positioned at file 7 
+because of the double EOF left by the last WFITS command.
+
+          cl> devstatus mta
+
+We can examine the contents of the tape with the task MTEXAMINE.  The default
+parameters will dump out the record structure for each file on the tape. In
+our second execution we will dump the 1st record of the 4th file out in ASCII
+format (quit the paging with a "q" once you have seen the header information).
+After this task execution the tape is now positioned at file 5.
+
+          cl> lpar mtexamine
+          cl> mtex mta
+          cl> mtex mta file=4 du+ rec=1 out=c | page
+          cl> devstatus mta
+
+We can list the data on the FITS tape using the RFITS command.
+
+          cl> rfits mta 1-99 make-
+          cl> rfits mta 1-99 make- old+
+
+We can also look at the FITS headers of files on the tape.  Let's look at
+the FITS header for the last image we wrote to tape.  Note the BSCALE and
+BZERO keywords.
+
+          cl> rfits mta 6 make- long+ | page
+
+We can certainly read all of the data back onto disk, or we can select
+particular files.
+
+          cl> rfits mta 2,5-6 x
+          cl> dir *.imh
+          cl> imstat x0002,sp0023   # as a check
+
+FITS files, or any type of files for that matter, can be read directly onto 
+disk with the task T2D.
+
+          cl> lpar t2d
+          cl> t2d mta t 1-2
+          cl> dir
+          cl> rfits t00? "" make-
+
+IRAF tasks are now able to read and write FITS images directly, but except
+for RFITS, the tasks will only recognize these FITS images if they have
+an extension, like .fits.  The task RENAME will permit us to add an 
+extension to the t00? files that we just read in with T2D.
+
+          cl> rename t00? fits field=extn
+          cl> dir t00*
+
+We can also read the same data set from tape with RFITS, creating FITS files
+rather than native IRAF image files (.imh files) by setting the IRAF 
+environment variable "imtype" to "fits".  This tells IRAF that all output 
+files are now supposed to be FITS files.  The default value for imtype is imh.
+Since imtype is defined when an executable is called and IRAF caches 
+executables, you will need to refresh/flush the process cache when you change 
+imtype.  RFITS will add the .fits extensions automatically.
+
+          cl> show imtype
+          cl> set imtype=fits
+          cl> flpr
+          cl> rfits mta 1-2 f
+          cl> dir f00*
+          cl> set imtype=imh
+          cl> flpr
+
+Sometimes you may want to convert an IRAF image file into a ASCII file.  This
+can be done with the task WTEXTIMAGE.  The task RTEXTIMAGE will convert an
+ASCII file into an IRAF image file.  Text files can be written to tape with
+the task WCARDIMAGE.
+
+          cl> lpar wtextimage
+          cl> wtextimage sp0027.ms sp.txt 
+          cl> page sp.txt
+          cl> lpar rtextimage
+          cl> rtextimage sp.txt sp dim=1022,1
+          cl> imhead sp,sp0027.ms
+          cl> imstat sp,sp0027.ms
+          cl> wcardimage sp.txt mta new- det-
+          cl> devstatus mta
+
+[We normally do not advocate mixing data formats on a tape, but in this case
+we did not want to overwrite the FITS files just in case you wanted to play a
+bit more with the data.]
+
+A complete listing of the tasks in the DATAIO package can be looked at
+with the help facility.  One task that we did not work with was REBLOCK.  
+One little advertised use of REBLOCK is for copying tapes.  It can also be
+used to read FITS files directly onto disk, using RENAME to add the .fits
+extensions.
+
+          cl> help dataio
+
+Once you have finished working with this tape then deallocate the drive
+so others may use it.
+
+          cl> deallocate mta
+
+One CAUTION to users:  Since IRAF has its own mechanism for keeping track
+of the tape position, it is advised to always REWIND the tape from within IRAF
+before removing a tape and inserting a new one.  This can be done equally
+as well with DEALLOCATE/ALLOCATE since DEALLOCATE also rewinds the tape.
+
+We have created some rather large files on disk during this exercise so be
+sure to clean up your directory with DELETE and IMDELETE after you are
+finished.
+
+
+--------------------------------------------------------------------------------
+ 
+                                References
+ 
+A Beginner's Guide to Using IRAF, by Jeannette Barnes, August 1993.
+
+FITS: A Flexible Image Transport System, Wells, D.C., Greisen, E.W., and 
+Harten, R.H., 1981, Astronomy and Astrophysics Supplement Series 44, 363
+
+IEEE Standard for Binary Floating-Point Arithmetic, IEEE Standards Board,
+American National Standards Institute, ANSI/IEEE Std 754-1985
+
+-------------------------------end of exercise---------------------------------

@@ -1,0 +1,15 @@
+        input = "m92*.fits"     Input images
+       output = "%m%tr%92*.fits" Output images
+        (bias = "[338:350,2:510]") Bias section
+        (trim = "[1:318,2:510]") Trim section
+      (median = no)             Use median instead of average in column bias?
+ (interactive = yes)            Interactive?
+    (function = "chebyshev")    Fitting function
+       (order = 1)              Order of fitting function
+  (low_reject = 3.)             Low sigma rejection factor
+ (high_reject = 3.)             High sigma rejection factor
+    (niterate = 1)              Number of rejection iterations
+    (logfiles = "")             Log files
+    (graphics = "stdgraph")     Graphics output device
+      (cursor = "")             Graphics cursor input
+        (mode = "ql")           

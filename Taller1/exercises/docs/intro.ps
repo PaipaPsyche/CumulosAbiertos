@@ -1,0 +1,449 @@
+%!PS-Adobe-3.0
+%%Creator: enscript
+%%For: SunOS:jbarnes (J Barnes)
+%%Title: intro.txt
+%%CreationDate: Tue Oct  7 07:05:37 1997
+%%DocumentNeededResources: font Courier-Bold Courier
+%%Pages: (atend)
+%%BeginProlog
+% Start of enscript.pro -- prolog for text file translator
+% Copyright (c) 1984,1985,1987 Adobe Systems Incorporated. All Rights Reserved. 
+% GOVERNMENT END USERS: See Notice file in TranScript library directory
+% -- probably /usr/lib/ps/Notice
+% RCSID: $Header: /disks/hobo/vp6/snichols/rel4.0/src/transcript/lib/RCS/enscript.pro,v 4.0 1992/08/21 15:38:20 snichols Exp $
+/$enscript 50 dict def $enscript begin
+/S/show load def
+/bd { bind def } bind def
+/X{exch 0 rmoveto S} bd
+/Y{exch 0 exch rmoveto S} bd
+/B{3 1 roll moveto S} bd
+/F{$fd exch get setfont} def
+/U{1440 mul}def
+/UP{U 72 div}def
+/StartPage{/svpg save def .05 dup scale} bd
+/EndPage{svpg restore showpage} bd
+/DoPreFeed{/statusdict where{pop
+ statusdict/prefeed known{statusdict exch/prefeed exch put 0}if}if pop} bd
+/SetUpFonts
+ {dup/$fd exch array def{findfont exch scalefont $fd 3 1 roll put}repeat}def
+/InitGaudy{/Columns exch def
+ /ftD /Times-Bold findfont 12 UP scalefont def
+ /ftF /Times-Roman findfont 14 UP scalefont def
+ /ftP /Helvetica-Bold findfont 30 UP scalefont def} bd
+/LB{/pts exch UP def /charcolor exch def /boxcolor exch def /font exch def
+ /label exch def /dy exch def /dx exch def /lly exch def /llx exch def
+ gsave boxcolor setgray
+ llx lly moveto dx 0 rlineto 0 dy rlineto dx neg 0 rlineto closepath fill
+ /lines label length def
+ /yp lly dy add dy lines pts mul sub 2 div sub pts .85 mul sub def
+ font setfont charcolor setgray
+ label {dup stringwidth pop 2 div llx dx 2 div add exch sub yp moveto show
+   /yp yp pts sub def}forall grestore} bd
+/Gaudy{/plength exch def /BarLength exch def /hy exch def /hx exch def
+ /Page exch def /Date exch def  /File exch def /Comment exch def
+ hx hy  BarLength 144 sub .25 U [File] ftF .97 0 14 LB
+ hx hy 360 add BarLength 144 sub .25 U [Comment] ftF 1 0 14 LB
+ hx hy 1 U .5 U Date ftD .7 0 12 LB
+ BarLength 1080 sub hy 1 U .5 U [Page] ftP .7 1 30 LB
+ 2 1 Columns {1 sub plength Columns div mul 172.80 sub hy moveto 0 0 hy sub rlineto
+ stroke}for } bd
+/Landscape { 90 rotate 0 exch translate } bd
+%%EndProlog
+%%BeginSetup
+%%IncludeResource: font Courier-Bold
+1    200.000 /Courier-Bold
+%%IncludeResource: font Courier
+0    140.000 /Courier
+2 SetUpFonts
+%%EndSetup
+%%Page: ? 1
+StartPage
+-12240 Landscape
+1 F
+360 11530 (intro.txt        Sat Sep 27 10:21:45 1997        1)B
+0 F
+2628 11050(IRAF TUTORIAL SESSIONS)B
+3132 10730(Exercise 1.)B
+360 10250(This is a short exercise that should help acquaint you with the basics of IRAF. )B
+360 10090(We will assume that you have both an xgterm and an ximtool window open on)B
+360 9930(your monitor.  In the xgterm window, log into IRAF.  There are a few images)B
+360 9770(in the intro directory that we will use, so go there.  In this, as in the)B
+360 9610(other exercises, the commands after the prompt \(either % or cl>\) are meant to)B
+360 9450(be typed by the user; the #-sign indicates a comment.)B
+1200 9130(% cl                 # be sure you are in your IRAF login directory)B
+1032 8970(cl> cd exercises/intro # we assume here that the exercises directory is)B
+3132 8810(a subdirectory of your IRAF login directory)B
+360 8490(We need to be sure that your correct terminal type is known to IRAF.  This)B
+360 8330(can easily be checked and reset.)B
+1032 8010(cl> stty                    # show the current terminal type)B
+1032 7850(cl> stty xgterm nlines=40 ncols=80)B
+3384 7690(# set the terminal to xgterm with 80)B
+3552 7530(columns and 40 lines [the number of )B
+3552 7370(lines may be different for your window])B
+360 7050(Before proceeding further we need to unpack the images that will be used during)B
+360 6890(this exercise.  This can be done using the RFITS task.  New files will be)B
+360 6730(created with a .imh extension - these files are in the IRAF image format and)B
+360 6570(consist of a header \(.imh\) and pixel \(.pix\) file for each image.)B
+1032 6250(cl> dir               # list the files in the current directory)B
+1032 6090(cl> unlearn rfits)B
+1032 5930(cl> rfits fintro* "" junk old+)B
+360 5610(The next step is to familiarize yourself a bit with some of the basic)B
+360 5450(operations of IRAF.  Tasks with similar/related functionality are grouped)B
+360 5290(together in packages.  Tasks, and sometimes packages, have parameter files)B
+360 5130(that control their operation.)B
+1032 4810(cl> diskspace         # show the available diskspace )B
+1032 4650(cl> path              # show the current working directory)B
+1032 4490(cl> show imdir        # show where pixel \(.pix\) files will go when  )B
+3048 4330(new images are created)B
+1032 4170(cl> dir               # list the files in your current directory)B
+1032 4010(cl> dir *.imh         # list just the image files in your directory)B
+1032 3850(cl> dir uparm         # list the files in the uparm directory - a place)B
+3048 3690(where parameter files are stored)B
+1032 3530(cl> dir l+            # do a long directory listing)B
+1032 3370(cl> package           # show what packages are currently loaded)B
+1032 3210(cl> help images       # help for the package "images")B
+1032 3050(cl> phelp imheader    # help for task "imheader" - is the proper)B
+3048 2890(package loaded for its execution?)B
+1368 2730(<space bar>       # go to next page of help)B
+1368 2570(b                 # go back one page)B
+1368 2410(?                 # view options)B
+1368 2250(q                 # quit the help for this task)B
+1032 2090(cl> lpar imh          # list task parameters - did I goof? - task names)B
+3048 1930(and parameters need enough characters specified)B
+3048 1770(to be identifiable)B
+1032 1610(cl> lpar imheader     # note query and hidden parameters - query )B
+3048 1450(parameters are listed first with hidden )B
+3048 1290(parameters following in parentheses)B
+1032 1130(cl> unlearn imhead    # unlearn parameters - go back to defaults)B
+1032 970(cl> imhead im010      # short header listing - what does it tell you?)B
+1032 810(cl> imhead            # by default imheader will list all images with)B
+3048 650(the extensions listed in the parameter imlist)B
+8592 11210(cl> imhead im010 l+ )B
+8592 11050(cl> ^ | page          # what did we just do?  we recalled the last)B
+10608 10890(command and "piped" the output to the PAGE)B
+10608 10730(task)B
+8592 10570(cl> lpar imhead)B
+8592 10410(cl> imhead im010 l+ u-)B
+-160(# note the pointer to the pixel file)Y
+8592 10090(cl> epar imhead       # modify the task so it always types the long)B
+10608 9930(header listing - type yes after the parameter)B
+10608 9770(entry for "longheader" followed by a return)B
+8928 9610(:q                # exit eparam mode and "save" the new parameters)B
+10608 9450([exiting with crtl-C does NOT update the )B
+10608 9290(parameter file})B
+8592 9130(cl> lpar imhead       # was the edited parameter saved?)B
+8592 8970(cl> imhead im011 | page)B
+8592 8810(cl> dir uparm         # what is the uparm directory used for?  Can you)B
+10608 8650(find the parameter file for "imheader"?  The)B
+10608 8490(name is a combination of the package \(imutil\))B
+10608 8330(and task name, ie imlimhear.par.)B
+8592 8170(cl> unlearn imhead    # go back to the default parameter setting)B
+8592 8010(cl> dir uparm         # what just happened?)B
+8592 7850(cl> imhead im010 l+ | page )B
+10440 7690(# note the keyword "exptime")B
+8592 7530(cl> unlearn hselect)B
+8592 7370(cl> lpar hselect )B
+8592 7210(cl> hselect im*.imh $I,exptime yes)B
+10440 7050(# see the help for hselect - it allows us)B
+10608 6890(to look at selected keywords from image)B
+10608 6730(headers)B
+8592 6570(cl> unlearn hedit)B
+8592 6410(cl> lpar hedit)B
+8592 6250(cl> hedit im*.imh notice "test data" add+)B
+10440 6090(# add a keyword plus value to the headers of)B
+10608 5930(the two images - hit return after each query)B
+8592 5770(cl> imhead im010 l+   # do you see the new keyword?)B
+8592 5610(cl> hselect im*.imh $I,notice yes)B
+7920 5290(What have you learned about parameters?  What is the difference between)B
+7920 5130(query and hidden parameters?   What is the uparm directory?  Do you )B
+7920 4970(understand the different syntaxes that we have been using in task executions?)B
+7920 4810(If you have questions see the Beginner's Guide mentioned below in the)B
+7920 4650(References section.)B
+7920 4330(A Short Exercise)B
+7920 4170(----------------)B
+7920 3850(There are 2 images in your directory, im010 and im011, of the same)B
+7920 3690(field, but one frame has been slightly shifted from the other.  We want)B
+7920 3530(to shift the second frame so it aligns with the first frame, and then)B
+7920 3370(average these two frames together.)B
+8592 3050(cl> dir im*.imh       # note the two frames)B
+8592 2890(cl> imhead im*.imh    # check to see if they are the same field)B
+8592 2730(cl> unlearn display   )B
+8592 2570(cl> lpar display      # look at the parameters for the display task)B
+8592 2410(cl> display im010 1   # load the first image into the image display)B
+7920 2090(Let us diverge for a moment.  This is probably a good time to acquaint)B
+7920 1930(yourself with ximtool, if you have not used it before.  You should know)B
+7920 1770(how to zoom, pan, window, and blink.  All options are done with the mouse.)B
+7920 1610(Notice the pull down menus at the top of the window on the left side.  Pull)B
+7920 1450(each menu down and review the selections - use the left mouse button to pull)B
+7920 1290(down the menus.  At the top of the window on the right side are some point )B
+7920 1130(and click options -  going from left to right are: activate the Control )B
+7920 970(panel, flip the image left to right, flip the image top to bottom, go to)B
+7920 810(previous frame, the current frame number, go to the next frame, and a help)B
+7920 650(button to view the man page.  At the bottom of the window on the right side)B
+EndPage
+%%Page: ? 2
+StartPage
+-12240 Landscape
+1 F
+360 11530 (intro.txt        Sat Sep 27 10:21:45 1997        2)B
+0 F
+360 11210(are rough coordinates of the current cursor position as well as an estimate)B
+360 11050(of the pixel value at that cursor position \(this can be abled/disabled in)B
+360 10890(the Options pull down menu or in the Control panel\).  The large green box)B
+360 10730(in the upper right corner is a "panner" box - it shows you what part of the)B
+360 10570(image you are currently looking at - right now we are displaying the full)B
+360 10410(image.)B
+360 10090(The lookup table can be modified by moving the cursor up and down in the )B
+360 9930(window \(contrast\) or left and right \(brightness\) while holding down the right)B
+360 9770(mouse button.  Try it.)B
+360 9450(Panning and zooming are done with the middle mouse button.  Move the cursor to)B
+360 9290(an interesting part of the image - click twice with the middle mouse button)B
+360 9130(without moving the cursor.  Click again without moving the cursor.  If you move)B
+360 8970(the cursor and then click, the region under the cursor is moved to the center)B
+360 8810(of the window \(panning\).  If you click without moving the cursor then the )B
+360 8650(region is zoomed.  Play with this until you understand how it works.  Go back)B
+360 8490(to the unzoomed image when you are finished.)B
+360 8170(These same operations can be done with the Control panel - if you have not)B
+360 8010(opened the Control panel yet, do so now and move it to a convenient place)B
+360 7850(on your screen \(or desktop\).)B
+360 7530(We want to blink this field and that of im011.  So we will need to load)B
+360 7370(the second image into the second frame buffer - you have 4 frame buffers)B
+360 7210(available for images.)B
+1032 6890(cl> display im011 2)B
+360 6570(Now try to match the lookup tables of both images. Adjust the contrast and)B
+360 6410(brightness for the second image that you should be looking at now.  Use the)B
+360 6250(Control panel to do this - twiddle things until you have black stars on a)B
+360 6090(white sky background.  Using the Control panel again look at frame 1 \(top)B
+360 5930(left of panel\).  Go back to frame 2 - push "Match LUTs" - go to frame 1 - they)B
+360 5770(should have the same contrast and brightness now.  Then blink between the two)B
+360 5610(frames by pressing the "Blink" button - adjust the blink rate if you wish.)B
+360 5450(Notice the small shift between the frames?  Stop the blink mode.)B
+360 5130(Play a bit with ximtool until you feel comfortable with it.  It has many more)B
+360 4970(features that we will not cover here - see the document referenced at the end )B
+360 4810(of this exercise or the manual page available with the ? button.)B
+360 4490(Now back to our original problem of computing and correcting for these shifts.)B
+1032 4170(cl> display im010 1   # redisplay im010)B
+1032 4010(cl> unlearn imexamine)B
+1032 3850(cl> lpar imexamine    # we want to compute the shifts using this)B
+3048 3690(task interactively)B
+1032 3530(cl> imexamine         # move the cursor into the ximtool window -)B
+3048 3370(notice that it has changed to a blinking )B
+3048 3210(circle - imexamine has put us into "interactive)B
+3048 3050(image cursor mode" )B
+1032 2730(a. put the cursor on some stars and press the "a" key - information)B
+1284 2570(will be printed in the xgterm window: the x-coord and y-coord )B
+1284 2410(values are on the first line with additional information on the)B
+1284 2250(second line  - see the help page for imexamine for details)B
+1032 1930(b. with the cursor in the image window type "?" to see the cursor help)B
+1284 1770(- exit cursor help with "q" in the xgterm window )B
+1032 1450(c. what we would like to do is select 3 relatively bright stars)B
+1284 1290(and measure their positions in both frames and then compute)B
+1284 1130(the differences - we will use the average of the differences to)B
+1284 970(shift the second frame so it aligns with the first)B
+1284 650(mark 3 stars with the "a" key - space them over the image)B
+8592 11050(d. with the cursor in the image window, type "d" - you will be queried)B
+8844 10890(in the xgterm window for the next image - enter "im011" and frame "1")B
+8844 10570(measure the same three stars in this image )B
+8592 10250(e. quit "imexamine" with "q" in the ximtool window )B
+7920 9770(Compute the average shift, ie what shift do we want to apply to the)B
+7920 9610(second image so that it aligns with the first?  The shifts that I computed)B
+7920 9450(are -0.53 and -1.68 - do you agree?)B
+8592 9130(cl> lpar help)B
+8592 8970(cl> help imshift sec=description  # look at just one part of the)B
+11616 8810(help page for the task that)B
+11616 8650(we want to use)B
+8592 8490(cl> help imshift sec=example)B
+8592 8330(cl> unlearn imshift)B
+8592 8170(cl> lpar imshift)B
+8592 8010(cl> imshift im011 s011 ??? ???    # shift im011 with the )B
+11616 7850(appropriate values)B
+7920 7530(Now, blink im010 and s011 and see if we did a good job.  Do you remember)B
+7920 7370(how to do this?  Congratulate yourself if things look ok!!)B
+7920 7050(Let's try a little image arithmetic now. We have two frames, im010)B
+7920 6890(and s011, that we want to average.  Let's do it two ways.)B
+8592 6570(cl> unlearn imsum imarith)B
+8256 6250(a.  cl> lpar imsum)B
+8592 6090(cl> imsum im010,s011 aver1 pixt=r calct=r option=average v+)B
+8928 5930(<or try "epar imsum", modify all of the parameters, and then)B
+9012 5770(type ":go" >)B
+8256 5450([Note the concern here about the pixel type, both for the calculation)B
+8256 5290(and for the output image.])B
+8256 4970(b.  cl> lpar imarith)B
+8592 4810(cl> imarith im010 + s011 aver2 pixt=r calct=r v+)B
+8928 4650(<try "epar imarith", edit all parameters, type ":go">)B
+8592 4490(cl> imarith aver2 / 2 aver2       # notice we are overwriting the)B
+11616 4330(input image)B
+8256 4010(c. [Hopefully the results are the same for both operations.])B
+8592 3690(cl> unlearn imstatistics)B
+8592 3530(cl> lpar imstat)B
+8592 3370(cl> imstat aver*.imh)B
+7920 3050(Notice that when you change hidden parameters on the command line that they)B
+7920 2890(are NOT "learn"ed!  How do you "learn" parameters?)B
+7920 2570(History)B
+7920 2410(-------)B
+7920 2090(IRAF can redirect terminal output to a file, as well as pipe output from)B
+7920 1930(one task into the input of another task.  There is also a history and recall)B
+7920 1770(mechanism.)B
+8592 1450(cl> history              # prints history tree)B
+8592 1290(cl> ^                    # recall and execute last command, can also)B
+10860 1130(include number to execute any task in tree)B
+8592 970(cl> e lpar               # recall last lpar command - allows you to edit)B
+10860 810(command line before executing with "return" -)B
+10860 650(use the arrow keys to move cursor, delete)B
+EndPage
+%%Page: ? 3
+StartPage
+-12240 Landscape
+1 F
+360 11530 (intro.txt        Sat Sep 27 10:21:45 1997        3)B
+0 F
+3300 11210(or insert to the left of the cursor)B
+1032 11050(cl> e                    # recall last command - use up/down arrows to)B
+3300 10890(to go up/down history tree)B
+1032 10730(cl> history 100          # look at last 100 commands)B
+1032 10570(cl> history 100 > hfile  # redirect output to a file)B
+1032 10410(cl> page hfile           # page the file)B
+1032 10250(cl> history 100 | page   # alternate method avoiding intermediate)B
+3300 10090(file)B
+360 9770(What is the difference between ">" and "|" ?)B
+360 9450(More on Plotting)B
+360 9290(----------------)B
+360 8970(Let's explore plotting in IRAF a bit.  Some plot tasks are interactive and)B
+360 8810(others are not.  You can always replot whatever was in the last plot buffer)B
+360 8650(and play with it.)B
+1032 8330(cl> phelp plot           # list help for "plot" package)B
+1032 8170(cl> contour s011         # make a contour plot of your shifted)B
+3300 8010(image - if it is not already the frame)B
+3300 7850(that you are looking at in the ximtool )B
+3300 7690(window, re-display it.  Compare the plot)B
+3300 7530(with the displayed image)B
+1032 7210(cl> =gcur                 # recall last plot and look at it )B
+3384 7050(interactively - we are now in "interactive)B
+3384 6890(graphics cursor mode" - the cursor must)B
+3384 6730(be in the plot window to accept commands)B
+1368 6570(:.help                # these cursor options are available to)B
+3384 6410(you in ALL plotting tasks in IRAF - they)B
+3384 6250(are global cursor commands - quit the)B
+3384 6090(help with a "q" in the text window)B
+1368 5770(Z - place the cursor on a bright contour and type "Z"   )B
+1368 5450(A - put axis on zoomed plot)B
+1368 5130(C - place the cursor on a feature and print out the current )B
+1704 4970(cursor positions)B
+1368 4650(0 - get full plot back)B
+1368 4330(hitting any key other than the caps will exit)B
+1032 4010(cl> surface s011          # draw a surface plot of the same image)B
+1032 3850(cl> surface s011 >G meta  # save plot in a file)B
+1032 3530(cl> implot s011           # this is an interactive plotting task that is)B
+3384 3370(useful for inspecting 2-d images - type "?")B
+3384 3210(- note the cursor commands \(small letters )B
+3384 3050(and : commands\) - these will differ from )B
+3384 2890(task to task \(if they are interactive\) - )B
+3384 2730(they are NOT global)B
+1368 2410(c - column plot, column read from cursor position)B
+1368 2090(:l 100  - plot line 100)B
+1368 1770(:c 150 200  - plot average of columns 150-200)B
+1368 1610(:.write meta          # save plot in file)B
+1368 1290(< spend some time becoming familiar with "implot" - you)B
+1536 1130(will use it often - try the global keys as well>)B
+1368 810(how can you expand the plot other than with "Z"?  look at the)B
+1368 650("e" key - put both cursors at the lower left corner of a box)B
+9012 11210(defining the region you wish to zoom, press "e", then move)B
+9012 11050(both cursors to the upper right corner of the box and press)B
+9012 10890("e" again)B
+8928 10570(:l 100  - to get the full plot size back)B
+8928 10250(q                     # exit)B
+8592 9930(cl> implot dev$wpix       # plot the image that is distributed with)B
+10944 9770(the IRAF system)B
+8928 9450(:w world              # this image has RA and DEC information)B
+10944 9290(stored in its header)B
+8928 8970(:f %H                 # convert to hh:mm:ss)B
+8928 8810(:.write meta)B
+8928 8650(c                     # place the cursor on the middle of the)B
+10944 8490(galaxy and type "c" to get a column plot)B
+8928 8330(:f %h                 # convert to dd:mm:ss)B
+8928 8170(:.write meta)B
+8928 8010(q                     # exit)B
+7920 7690(We have saved several plots in a file called meta.  Let's look at those)B
+7920 7530(plots now.)B
+8592 7210(cl> unlearn gkimosaic gkidir)B
+8592 7050(cl> gkidir meta           # list plot file)B
+8592 6890(cl> lpar gkimosaic)B
+8592 6730(cl> gkimos meta           # plot the meta file)B
+8928 6570(q                     # to quit plot mode)B
+8592 6410(cl> gkimos dev$vdm.gki    # plot the distributed metacode file)B
+8928 6250(<space bar>           # to continue to next set of plots)B
+8928 6090(q                     # to quit plot mode)B
+7920 5770(For the next few minutes it may be profitable to spend a bit more time)B
+7920 5610(familiarizing yourself with the task IMEXAMINE, since it is such a powerful)B
+7920 5450(tool.)B
+8592 5130(cl> display dev$pix 1          # this is the IRAF distributed)B
+11364 4970(image, M51.  Wpix and pix are)B
+11364 4810(the same image but wpix has the)B
+11364 4650(world coordinate information)B
+11364 4490(in its header )B
+8592 4170([window the image until it looks good] )B
+8592 3850(cl> imexamine)B
+8592 3530([put the cursor on the star at 224, 131])B
+8928 3370(?                          # list cursor options - type "q" in)B
+11364 3210(the text window)B
+8928 3050(z                          # print out pixel values around)B
+11364 2890(cursor)B
+8928 2730(m                          # print statistics within box)B
+8592 2410([move the cursor to a glob on a spiral arm)B
+8928 2250(s                          # surface plot)B
+8928 2090(:epar                      # edit the parameters for the last)B
+11364 1930(plot - you must do this from the)B
+11364 1770(ximtool window although the command)B
+11364 1610(will appear in the graphics window -)B
+11364 1450(exit epar mode in the xgterm window)B
+11364 1290(with :q)B
+8928 970(l                          # plot a line)B
+8928 810(g                          # go to "interactive graphics)B
+11364 650(cursor mode" - the global cursor)B
+EndPage
+%%Page: ? 4
+StartPage
+-12240 Landscape
+1 F
+360 11530 (intro.txt        Sat Sep 27 10:21:45 1997        4)B
+0 F
+3804 11210(keys can now be used to fuss)B
+3804 11050(with the graphics plot)B
+1368 10890(:naverage 10               # average 10 lines - since the graphics)B
+3804 10730(window is now the active window type)B
+3804 10570(this command in it)B
+1368 10250(i                          # go back to "interactive image)B
+3804 10090(cursor mode")B
+1368 9770([try other options])B
+1368 9610(q                          # quit the task - you can quit)B
+3804 9450(in either interactive mode)B
+360 9130(One last thing:  a pretty picture.  Let's overlay a grid in the ximtool )B
+360 8970(window on the image dev$wpix.)B
+1032 8650(cl> display dev$wpix 1 xmag=0.8 ymag=0.8)B
+1032 8490(cl> wcslab dev$wpix 1          # invert the image to black)B
+3804 8330(background and window - if nothing)B
+3804 8170(happens when the prompt returns type)B
+3804 8010("gflush")B
+360 7690(What did the xmag and ymag parameters do?)B
+360 7370(If you are finished with this exercise you may want to clean your directory)B
+360 7210(up a bit with the deletion commands.)B
+1032 6890(cl> dir)B
+1032 6730(cl> delete hfile,meta          # deletes ordinary files)B
+1032 6570(cl> imdelete *.imh ver+        # deletes image files - you may)B
+3804 6410(want to keep im*.imh around)B
+3804 6250(but we will not be using them)B
+3804 6090(again)B
+360 5770(Do you know why there is a special IMDELETE command for the IRAF image?)B
+1032 5450(cl> logout)B
+360 5130(You should always log out of IRAF first before shutting down the window)B
+360 4970(environment with the mouse.  Then log off the Unix system, if you wish.)B
+1200 4650(% logout)B
+360 4170(--------------------------------------------------------------------------------)B
+3048 3850(References)B
+360 3530(A Beginner's Guide to Using IRAF, by Jeannette Barnes, August 1993.)B
+360 3210(XIMTOOL Version 1.0 \(December 10, 1996\) document)B
+360 2890(------------------------------end of exercise-----------------------------------)B
+EndPage
+%%Trailer
+end
+%%Pages: 4

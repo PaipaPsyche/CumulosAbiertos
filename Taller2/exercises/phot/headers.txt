@@ -1,0 +1,7 @@
+m92001.fits[352,512][short]: ave of 25 bias
+m92006.fits[352,512][short]: ave of  5 Harris B Sept 1 1987
+m92007.fits[352,512][short]: ave of  5 V filter dome flat  1-sept-87
+m92010.fits[352,512][short]: M-92 V
+m92011.fits[352,512][short]: M-92 V
+m92014.fits[352,512][short]: M-92 B
+m92015.fits[352,512][short]: M-92 B

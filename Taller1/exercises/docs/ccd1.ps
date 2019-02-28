@@ -1,0 +1,361 @@
+%!PS-Adobe-3.0
+%%Creator: enscript
+%%For: SunOS:jbarnes (J Barnes)
+%%Title: ccd1.txt
+%%CreationDate: Tue Oct  7 07:01:16 1997
+%%DocumentNeededResources: font Courier-Bold Courier
+%%Pages: (atend)
+%%BeginProlog
+% Start of enscript.pro -- prolog for text file translator
+% Copyright (c) 1984,1985,1987 Adobe Systems Incorporated. All Rights Reserved. 
+% GOVERNMENT END USERS: See Notice file in TranScript library directory
+% -- probably /usr/lib/ps/Notice
+% RCSID: $Header: /disks/hobo/vp6/snichols/rel4.0/src/transcript/lib/RCS/enscript.pro,v 4.0 1992/08/21 15:38:20 snichols Exp $
+/$enscript 50 dict def $enscript begin
+/S/show load def
+/bd { bind def } bind def
+/X{exch 0 rmoveto S} bd
+/Y{exch 0 exch rmoveto S} bd
+/B{3 1 roll moveto S} bd
+/F{$fd exch get setfont} def
+/U{1440 mul}def
+/UP{U 72 div}def
+/StartPage{/svpg save def .05 dup scale} bd
+/EndPage{svpg restore showpage} bd
+/DoPreFeed{/statusdict where{pop
+ statusdict/prefeed known{statusdict exch/prefeed exch put 0}if}if pop} bd
+/SetUpFonts
+ {dup/$fd exch array def{findfont exch scalefont $fd 3 1 roll put}repeat}def
+/InitGaudy{/Columns exch def
+ /ftD /Times-Bold findfont 12 UP scalefont def
+ /ftF /Times-Roman findfont 14 UP scalefont def
+ /ftP /Helvetica-Bold findfont 30 UP scalefont def} bd
+/LB{/pts exch UP def /charcolor exch def /boxcolor exch def /font exch def
+ /label exch def /dy exch def /dx exch def /lly exch def /llx exch def
+ gsave boxcolor setgray
+ llx lly moveto dx 0 rlineto 0 dy rlineto dx neg 0 rlineto closepath fill
+ /lines label length def
+ /yp lly dy add dy lines pts mul sub 2 div sub pts .85 mul sub def
+ font setfont charcolor setgray
+ label {dup stringwidth pop 2 div llx dx 2 div add exch sub yp moveto show
+   /yp yp pts sub def}forall grestore} bd
+/Gaudy{/plength exch def /BarLength exch def /hy exch def /hx exch def
+ /Page exch def /Date exch def  /File exch def /Comment exch def
+ hx hy  BarLength 144 sub .25 U [File] ftF .97 0 14 LB
+ hx hy 360 add BarLength 144 sub .25 U [Comment] ftF 1 0 14 LB
+ hx hy 1 U .5 U Date ftD .7 0 12 LB
+ BarLength 1080 sub hy 1 U .5 U [Page] ftP .7 1 30 LB
+ 2 1 Columns {1 sub plength Columns div mul 172.80 sub hy moveto 0 0 hy sub rlineto
+ stroke}for } bd
+/Landscape { 90 rotate 0 exch translate } bd
+%%EndProlog
+%%BeginSetup
+%%IncludeResource: font Courier-Bold
+1    200.000 /Courier-Bold
+%%IncludeResource: font Courier
+0    140.000 /Courier
+2 SetUpFonts
+%%EndSetup
+%%Page: ? 1
+StartPage
+-12240 Landscape
+1 F
+360 11530 (ccd1.txt        Sat Sep 27 13:22:34 1997        1)B
+0 F
+2544 11050(IRAF TUTORIAL SESSIONS)B
+3132 10730(Exercise 2.)B
+360 10250(This exercise is designed to show you how IRAF deals with the preliminary)B
+360 10090(reductions of CCD data, including the overscan subtraction, the bias or)B
+360 9930(zero level subtraction, the dark subtraction, and the flat fielding.  The)B
+360 9770(images for this exercise are direct imaging data taken at the Kitt Peak)B
+360 9610(National Observatory by Dr. George Jacoby.  Spectroscopic reductions are )B
+360 9450(similar but the flat fielding is often done differently.  Exercise 3. deals )B
+360 9290(with some spectroscopic data.  This exercise assumes that you have worked)B
+360 9130(through Exercise 1. and feel comfortable with the basics of IRAF.)B
+360 8810(We will approach this exercise from two different paths.  The first path)B
+360 8650(is the "long" approach to the problem, but will allow you to step through)B
+360 8490(this process one task at a time.  The second path is the preferable way to)B
+360 8330(do these preliminary reductions but for the first time user the actual)B
+360 8170(steps may not be obvious.)B
+360 7850(We will assume that you are logged into IRAF in an xgterm window, or a similar)B
+360 7690(graphics terminal emulator window.  It can be helpful to also display)B
+360 7530(images using the ximtool window for this exercise.)B
+360 7210(Go to your IRAF home directory and then go to the subdirectory called phot)B
+360 7050(in the exercises directory.)B
+1200 6730(cl> cd)B
+1200 6570(cl> cd exercises/phot)B
+360 6250(We will need to first unpack the images using the RFITS task.)B
+1200 5930(cl> unlearn rfits)B
+1200 5770(cl> rfits fm92* "" junk old+)B
+360 5450(There should be some IRAF images in this directory called m92*.imh.  There)B
+360 5290(should be a bias frame as well as two flat fields and four images all taken)B
+360 5130(through either V or B filters.)B
+1200 4810(cl> dir)B
+1200 4650(cl> imhead m92*.imh)B
+360 4330(The bias frame is an average of 25 frames.  This is done to minimize the)B
+360 4170(noise.  Each flat is an average of 5 frames to improve the signal to noise.)B
+360 4010(Notice that the pixel type is "short" or 16-bit data.)B
+360 3690(PATH 1.)B
+360 3530(-------)B
+360 3210(The first step would be to average the bias frames.  This can be done)B
+360 3050(with the task IMCOMBINE in the IMAGES.IMMATCH package.  We would then do the )B
+360 2890(same for the flats.  Some type of pixel rejection could be used during this )B
+360 2730(step to eliminate bad pixels or cosmic rays.  Since these steps have already )B
+360 2570(been done for us we can continue on to the overscan subtraction.)B
+360 2250(We need to determine two things at this point:  the overscan region to )B
+360 2090(subtract and the trimming parameters to determine the output image size.  For)B
+360 1930(this chip the overscan region is 32 columns but we often do not use all of the)B
+360 1770(columns.  The overscan region and any bad rows or columns along the edges of )B
+360 1610(the frame are then trimmed from the image to produce our output image.  We)B
+360 1450(determine these parameters with IMPLOT, using one of the flat field frames.)B
+1200 1130(cl> display m92006 1)B
+1200 970(cl> implot m92006)B
+360 650(Determine the columns to use for the overscan.  I found using e, :l n m,)B
+7920 11210(:c n m, and C to be very helpful. Try to avoid using the sloping part of the)B
+7920 11050(overscan.  You will need to expand the plot around the overscan region.  Once)B
+7920 10890(you have determined the columns to use for the overscan, plot the average of)B
+7920 10730(these columns.  What columns did you decide to use?  I like columns 335-350;)B
+7920 10570(are yours close to those values?  Write down your column numbers.)B
+7920 10250(Now decide what columns and rows will be included in our output image.  Plot)B
+7920 10090(several rows and columns and see what these values should be.  Again you )B
+7920 9930(will need to expand the plot.  Look at the rows first - do you see any bad)B
+7920 9770(columns at the left edge - what about the right edge?  We certainly want)B
+7920 9610(to trim off the overscan plus a bad column or two on the right edge of the plot.)B
+7920 9450(Then look at some columns.  There appear to be some bad rows there as well.)B
+7920 9290(Expand each edge and determine the usable range of rows.  )B
+7920 8970(The values that I determined for the trimming parameters are 1-318 for the)B
+7920 8810(columns, and 2-510 for the rows.  Do you agree?)B
+7920 8490(Once we have this information we are ready to do the overscan subtraction)B
+7920 8330(and trimming.  Load the packages.  And then edit the task COLBIAS to reflect)B
+7920 8170(the values that we determined.)B
+8760 7850(cl> noao)B
+8760 7690(cl> imred)B
+8760 7530(cl> bias)B
+8760 7370(cl> phelp colbias)B
+8760 7210(cl> unlearn colbias       # what does this do?)B
+8760 7050(cl> epar colbias          # do you remember that you can save)B
+11112 6890(the changes with :q?)B
+7920 6570(Running LPAR on COLBIAS should show parameters similar to the following:)B
+7920 6250(cl> lpar colbias)B
+8592 6090(input = "m92*.imh"      Input images)B
+8508 5930(output = "%m%tr%92*.imh" Output images)B
+8592 5770(\(bias = "[335:350,2:510]"\) Bias section)B
+8592 5610(\(trim = "[1:318,2:510]"\) Trim section)B
+8424 5450(\(median = no\)             Use median instead of average in column bias?)B
+8004 5290(\(interactive = yes\)            Interactive?)B
+8256 5130(\(function = "chebyshev"\)    Fitting function)B
+8508 4970(\(order = 1\)              Order of fitting function)B
+8088 4810(\(low_reject = 3.\)             Low sigma rejection factor)B
+8004 4650(\(high_reject = 3.\)             High sigma rejection factor)B
+8256 4490(\(niterate = 1\)              Number of rejection iterations)B
+8256 4330(\(logfiles = ""\)             Log files)B
+8256 4170(\(graphics = "stdgraph"\)     Graphics output device)B
+8424 4010(\(cursor = ""\)             Graphics cursor input)B
+8592 3850(\(mode = "ql"\)           )B
+7920 3370(Notice that the overscan and trim values are entered as "image sections",)B
+7920 3210(the x-range and y-range in square brackets.  The trim section is that part)B
+7920 3050(of the image we wish to keep.)B
+7920 2730(Do you understand the output image names?  Try the following to see what)B
+7920 2570(the actual names on output will be.  The task SECTIONS can be used to test)B
+7920 2410(image templates. In this case, the % sign brackets that part of the image)B
+7920 2250(name we wish to replace \(m\) and what we wish to replace it with \(tr\).)B
+8760 1930(cl> sections %m%tr%92*.imh)B
+7920 1610(So, I think we are ready to execute COLBIAS - this task will subtract the )B
+7920 1450(overscan from each image and then trim the image according to our )B
+7920 1290(specifications.  Since the task is being run interactively we will first )B
+7920 1130(see a plot of the average of the overscan vector; we could modify the fitting )B
+7920 970(parameters at this time but we like to use a straight line for these data -)B
+7920 810(notice the fitting parameters at the top of the plot.  A return is sufficient )B
+7920 650(for the task queries - type q in plot mode to continue.)B
+EndPage
+%%Page: ? 2
+StartPage
+-12240 Landscape
+1 F
+360 11530 (ccd1.txt        Sat Sep 27 13:22:34 1997        2)B
+0 F
+1200 11050(cl> colbias)B
+1200 10890(cl> dir)B
+1200 10730(cl> imhead tr*.imh           # notice the new size of these images)B
+1200 10570(cl> implot tr92007           # check your flat)B
+360 10250(The next step is to subtract the bias or zero frame from each of the)B
+360 10090(images.  This is best done with IMARITH.  Let us first create a file with)B
+360 9930(a list of the images to process; we will use this as input and output to)B
+360 9770(IMARITH, overwriting our input data.)B
+1200 9450(cl> files tr*.imh > zlist)B
+1200 9290(cl> edit zlist               # delete bias frame from list)B
+1200 9130(cl> imhead @zlist)B
+1200 8970(cl> unlearn imarith)B
+1200 8810(cl> epar imarith)B
+360 8490(If you do LPAR on IMARITH your parameter file should look like the following.)B
+360 8170(cl> lpar imarith)B
+780 8010(operand1 = "@zlist"        Operand image or numerical constant)B
+1284 7850(op = "-"             Operator)B
+780 7690(operand2 = "tr92001"       Operand image or numerical constant)B
+948 7530(result = "@zlist"        Resultant image)B
+948 7370(\(title = ""\)             Title for resultant image)B
+780 7210(\(divzero = 0.\)             Replacement value for division by zero)B
+780 7050(\(hparams = ""\)             List of header parameters)B
+780 6890(\(pixtype = ""\)             Pixel type for resultant image)B
+696 6730(\(calctype = ""\)             Calculation data type)B
+780 6570(\(verbose = yes\)            Print operations?)B
+948 6410(\(noact = no\)             Print operations without performing them?)B
+1032 6250(\(mode = "ql"\)           )B
+360 5930(Execute IMARITH.)B
+1200 5610(cl> imarith)B
+360 5290(At this time, any dark subtraction would be done.  That would be done)B
+360 5130(using the task DARKSUB in the NOAO.IMRED.GENERIC package.  The frames)B
+360 4970(need to be scaled by exposure time before the subtraction is done, so)B
+360 4810(this information would need to be in the header.  We have no dark frames)B
+360 4650(so we will skip this step.)B
+360 4330(We finally arrive at the flat fielding stage.  We have two flats and they)B
+360 4170(need to be normalized before we divide them into our object frames.  )B
+360 4010(We will use IMSTATISTICS to determine the normalization value for each flat,)B
+360 3850(and then use IMARITH to create the normalized flats.)B
+1200 3530(cl> phelp imstatistics)B
+1200 3370(cl> imstat tr92006,tr92007 fields="image,mode")B
+1200 3210(cl> imarith tr92006 / 1313 Bflat)B
+1200 3050(cl> imarith tr92007 / 1468 Vflat)B
+1200 2890(cl> implot Bflat                  # also check Vflat)B
+1200 2730(cl> display Bflat 1               # also look at Vflat)B
+360 2410(Now we can divide each of the object frames by the appropriate flat.  It is)B
+360 2250(your responsible to substitute in the correct image names for the ????.  Why)B
+360 2090(does it require two executions of IMARITH?)B
+1200 1770(cl> imhead tr*.imh)B
+1200 1610(cl> imarith tr92010,tr92011 / ??? n92010,n92011)B
+1200 1450(cl> imarith tr92014,tr92015 / ??? ?????????????)B
+1200 1290(cl> imhead n92*.imh)B
+360 970(Look at these final images with DISPLAY and/or IMPLOT.  Check to see if )B
+360 810(the sky is flat across the image.  Sometimes the dome flats are not )B
+360 650(sufficient for flattening images - additional sky flats may need to be used.)B
+7920 11210(See the task MKSKYFLAT in the CCDRED package.)B
+7920 10890(At this point we may want to delete the results since we are going to)B
+7920 10730(reprocess the raw data again, but using the other path.)B
+8760 10410(cl> imdelete tr*.imh,n92*.imh,Bflat,Vflat ver+)B
+8760 10250(cl> del zlist)B
+8760 10090(cl> imhead m92*.imh)B
+7920 9770(PATH 2.)B
+7920 9610(-------)B
+7920 9290(Let's check to see what files are in our directory.)B
+8760 8970(cl> imhead m92*.imh)B
+7920 8650(We want to use the tasks in the CCDRED package now to reduce these same data.)B
+7920 8490(This is a much more streamlined technique.  Check to see what packages)B
+7920 8330(are loaded.  Load the necessary packages - CCDRED is in NOAO.IMRED.)B
+8760 8010(cl> package)B
+8760 7850(cl> ????)B
+7920 7530(The CCDRED package will process our data in the same way as we did )B
+7920 7370(previously.  However, the steps are combined into one task;  and we)B
+7920 7210(can use the information in the headers of the images to drive the task.)B
+7920 6890(The CCDRED package looks for certain keywords and values in the header.  If)B
+7920 6730(the keywords and values have different names than those expected by the )B
+7920 6570(package then a "translation" file can be used.  The package expects)B
+7920 6410(the keywords IMAGETYP \(with values "object", "flat", "zero", among others\),)B
+7920 6250(EXPTIME \(for dark subtraction\), SUBSET \(to define the filters\), just to )B
+7920 6090(mention the ones we will be using.  )B
+7920 5770(The task CCDLIST can be used as a check to be sure the package is picking)B
+7920 5610(up the header information correctly.)B
+8760 5290(cl> imheader m92015 l+      # look for imagetyp, exptime, subset)B
+8760 5130(cl> unlearn ccdred          # what does this do?)B
+8760 4970(cl> lpar ccdlist)B
+8760 4810(cl> ccdlist m92*.imh        # not much there - it should recognize)B
+11280 4650(imagetype and subset, but doesn't)B
+8760 4490(cl> ccdlist m92*.imh l+     # what does this tell us?)B
+7920 4170(Since this is KPNO data we already have a translation file set up so let's)B
+7920 4010(use it and see what happens.)B
+8760 3690(cl> setinstrument           # specify the translation file)B
+9096 3530(?)B
+9096 3370(direct)B
+8760 3050([now we are automatically put into EPAR mode for the package)B
+8844 2890(parameters for CCDRED - set the "verbose" parameter to "yes" -)B
+8844 2730(type :q.])B
+8760 2410([now we are automatically put into EPAR mode for the task parameters)B
+8844 2250(for CCDPROC - the task that does all of the work.  Look at these)B
+8844 2090(parameters and see the similarity with the processing steps in)B
+8844 1930(PATH 1.])B
+8760 1610([we do not want to do anything more here for now, so type :q.])B
+8760 1290(cl> ccdlist m92*.imh        # do you see a difference?)B
+8760 1130(cl> type subsets            # subsets was created by ccdlist)B
+8760 970(cl> dir ccddb$kpno          # kpno translation files)B
+8760 810(cl> type ccddb$kpno/direct.dat)B
+8760 650(cl> lpar ccdred)B
+EndPage
+%%Page: ? 3
+StartPage
+-12240 Landscape
+1 F
+360 11530 (ccd1.txt        Sat Sep 27 13:22:34 1997        3)B
+0 F
+360 11050(Now the CCDRED package knows about the headers.  Notice that the package)B
+360 10890(takes care of our pixel type for us as well.  Remember that our pixel)B
+360 10730(type is "short" but the "pixeltype" parameter will let us control both)B
+360 10570(the calculation type and output type during processing.  During the)B
+360 10410(actually processing the input images are overwritten; the "backup" parameter)B
+360 10250(would let us make copies of the original data first if we wanted.)B
+360 9930(Biases and flat frames can be combined using the tasks ZEROCOMBINE and )B
+360 9770(FLATCOMBINE.  But we will skip these steps since we have data that have already)B
+360 9610(been combined.  We are now ready to set up the parameters for CCDPROC.)B
+360 9450(Notice the two parameters called "biassec" and "trimsec".  These are currently)B
+360 9290(set to "image" - if these keywords have the correct value in the image header)B
+360 9130(then we need to do nothing.  But closer inspection will show that the values)B
+360 8970(that we computed earlier are different from the header values.  Run EPAR)B
+360 8810(and modify the parameters.)B
+1284 8490(cl> imhead m92015 l+)B
+1284 8330(cl> epar ccdproc)B
+1284 8170(cl> lpar ccdproc)B
+360 7850(This is what I used.)B
+360 7530(cl> lpar ccdproc)B
+948 7370(images = "m92*.imh"      List of CCD images to correct)B
+780 7210(\(ccdtype = "object"\)       CCD image type to correct)B
+612 7050(\(max_cache = 0\)              Maximum image caching memory \(in Mbytes\))B
+864 6890(\(noproc = no\)             List processing steps only?\\n)B
+864 6730(\(fixpix = no\)             Fix bad CCD lines and columns?)B
+696 6570(\(overscan = yes\)            Apply overscan strip correction?)B
+1032 6410(\(trim = yes\)            Trim the image?)B
+780 6250(\(zerocor = yes\)            Apply zero level correction?)B
+780 6090(\(darkcor = no\)             Apply dark count correction?)B
+780 5930(\(flatcor = yes\)            Apply flat field correction?)B
+696 5770(\(illumcor = no\)             Apply illumination correction?)B
+612 5610(\(fringecor = no\)             Apply fringe correction?)B
+780 5450(\(readcor = no\)             Convert zero level image to readout correction?)B
+780 5290(\(scancor = no\)             Convert flat field image to scan correction?\\n)B
+696 5130(\(readaxis = "line"\)         Read out axis \(column|line\))B
+780 4970(\(fixfile = ""\)             File describing the bad lines and columns)B
+780 4810(\(biassec = "[335:350,2:510]"\) Overscan strip image section)B
+780 4650(\(trimsec = "[1:318,2:510]"\) Trim data section)B
+1032 4490(\(zero = ""\)             Zero level calibration image)B
+1032 4330(\(dark = ""\)             Dark count calibration image)B
+1032 4170(\(flat = ""\)             Flat field images)B
+948 4010(\(illum = ""\)             Illumination correction images)B
+864 3850(\(fringe = ""\)             Fringe correction images)B
+528 3690(\(minreplace = 1.\)             Minimum flat field value)B
+696 3530(\(scantype = "shortscan"\)    Scan type \(shortscan|longscan\))B
+948 3370(\(nscan = 1\)              Number of short scan lines\\n)B
+444 3210(\(interactive = yes\)            Fit overscan interactively?)B
+696 3050(\(function = "chebyshev"\)    Fitting function)B
+948 2890(\(order = 1\)              Number of polynomial terms or spline pieces)B
+864 2730(\(sample = "*"\)            Sample points to fit)B
+696 2570(\(naverage = 1\)              Number of sample points to combine)B
+696 2410(\(niterate = 1\)              Number of rejection iterations)B
+528 2250(\(low_reject = 3.\)             Low sigma rejection factor)B
+444 2090(\(high_reject = 3.\)             High sigma rejection factor)B
+1032 1930(\(grow = 0.\)             Rejection growing radius)B
+1032 1770(\(mode = "ql"\)    )B
+360 1450(Since the "zero" and "flat" images are in the input list it is not)B
+360 1290(necessary to specify them.  Try running the task and see what happens.)B
+1284 970(cl> ccdproc)B
+1284 810(cl> page logfile)B
+1284 650(cl> imhead m92*.imh)B
+8844 11210(cl> imhead m92014 l+    # notice the processing flags in the header)B
+7920 10890(Do not delete these images since they will be used in a later exercise.)B
+7920 10410(-------------------------------------------------------------------------------)B
+10692 10090(References)B
+7920 9770(Type "help ccdred" to see a list of the tasks in this package.  Each task)B
+7920 9610(has an online help page.  Also see the list of "Additional Help Topics".)B
+7920 9290(A User's Guide to CCD Reductions with IRAF, by Phil Massey, February 1997.)B
+7920 8970(There is a "demo" task in the IMRED.CCDRED.CCDTEST package that may be )B
+7920 8810(instructive to run as well.)B
+7920 8490(---------------------------------end of exercise--------------------------------)B
+EndPage
+%%Trailer
+end
+%%Pages: 3

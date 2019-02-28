@@ -1,0 +1,24 @@
+m92010.fits: Sep 14  0:16 Trim data section is [1:318,2:510]
+m92010.fits: Sep 14  0:16 Overscan section is [338:350,2:510] with mean=505.4376
+m92001.fits: Sep 14  0:16 Trim data section is [1:318,2:510]
+m92001.fits: Sep 14  0:16 Overscan section is [338:350,2:510] with mean=499.5657
+m92010.fits: Sep 14  0:16 Zero level correction image is m92001.fits
+m92007.fits: Sep 14  0:16 Trim data section is [1:318,2:510]
+m92007.fits: Sep 14  0:16 Overscan section is [338:350,2:510] with mean=504.1444
+m92007.fits: Sep 14  0:16 Zero level correction image is m92001.fits
+m92010.fits: Sep 14  0:16 Flat field image is m92007.fits with scale=1464.385
+m92011.fits: Sep 14  0:16 Trim data section is [1:318,2:510]
+m92011.fits: Sep 14  0:17 Overscan section is [338:350,2:510] with mean=505.8242
+m92011.fits: Sep 14  0:17 Zero level correction image is m92001.fits
+m92011.fits: Sep 14  0:17 Flat field image is m92007.fits with scale=1464.385
+m92014.fits: Sep 14  0:17 Trim data section is [1:318,2:510]
+m92014.fits: Sep 14  0:17 Overscan section is [338:350,2:510] with mean=504.6416
+m92014.fits: Sep 14  0:17 Zero level correction image is m92001.fits
+m92006.fits: Sep 14  0:17 Trim data section is [1:318,2:510]
+m92006.fits: Sep 14  0:17 Overscan section is [338:350,2:510] with mean=503.2782
+m92006.fits: Sep 14  0:17 Zero level correction image is m92001.fits
+m92014.fits: Sep 14  0:17 Flat field image is m92006.fits with scale=1326.551
+m92015.fits: Sep 14  0:17 Trim data section is [1:318,2:510]
+m92015.fits: Sep 14  0:17 Overscan section is [338:350,2:510] with mean=504.8398
+m92015.fits: Sep 14  0:17 Zero level correction image is m92001.fits
+m92015.fits: Sep 14  0:17 Flat field image is m92006.fits with scale=1326.551

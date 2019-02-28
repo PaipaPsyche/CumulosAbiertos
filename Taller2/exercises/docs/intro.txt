@@ -1,0 +1,455 @@
+                           
+                           IRAF TUTORIAL SESSIONS
+
+                                 Exercise 1.
+
+
+This is a short exercise that should help acquaint you with the basics of IRAF. 
+We will assume that you have both an xgterm and an ximtool window open on
+your monitor.  In the xgterm window, log into IRAF.  There are a few images
+in the intro directory that we will use, so go there.  In this, as in the
+other exercises, the commands after the prompt (either % or cl>) are meant to
+be typed by the user; the #-sign indicates a comment.
+
+          % cl                 # be sure you are in your IRAF login directory
+        cl> cd exercises/intro # we assume here that the exercises directory is
+                                 a subdirectory of your IRAF login directory
+ 
+We need to be sure that your correct terminal type is known to IRAF.  This
+can easily be checked and reset.
+
+        cl> stty                    # show the current terminal type
+        cl> stty xgterm nlines=40 ncols=80
+                                    # set the terminal to xgterm with 80
+                                      columns and 40 lines [the number of 
+                                      lines may be different for your window]
+
+Before proceeding further we need to unpack the images that will be used during
+this exercise.  This can be done using the RFITS task.  New files will be
+created with a .imh extension - these files are in the IRAF image format and
+consist of a header (.imh) and pixel (.pix) file for each image.
+
+        cl> dir               # list the files in the current directory
+        cl> unlearn rfits
+        cl> rfits fintro* "" junk old+
+
+The next step is to familiarize yourself a bit with some of the basic
+operations of IRAF.  Tasks with similar/related functionality are grouped
+together in packages.  Tasks, and sometimes packages, have parameter files
+that control their operation.
+
+        cl> diskspace         # show the available diskspace 
+        cl> path              # show the current working directory
+        cl> show imdir        # show where pixel (.pix) files will go when  
+                                new images are created
+        cl> dir               # list the files in your current directory
+        cl> dir *.imh         # list just the image files in your directory
+        cl> dir uparm         # list the files in the uparm directory - a place
+                                where parameter files are stored
+        cl> dir l+            # do a long directory listing
+        cl> package           # show what packages are currently loaded
+        cl> help images       # help for the package "images"
+        cl> phelp imheader    # help for task "imheader" - is the proper
+                                package loaded for its execution?
+            <space bar>       # go to next page of help
+            b                 # go back one page
+            ?                 # view options
+            q                 # quit the help for this task
+        cl> lpar imh          # list task parameters - did I goof? - task names
+                                and parameters need enough characters specified
+                                to be identifiable
+        cl> lpar imheader     # note query and hidden parameters - query 
+                                parameters are listed first with hidden 
+                                parameters following in parentheses
+        cl> unlearn imhead    # unlearn parameters - go back to defaults
+        cl> imhead im010      # short header listing - what does it tell you?
+        cl> imhead            # by default imheader will list all images with
+                                the extensions listed in the parameter imlist
+        cl> imhead im010 l+ 
+        cl> ^ | page          # what did we just do?  we recalled the last
+                                command and "piped" the output to the PAGE
+                                task
+        cl> lpar imhead
+        cl> imhead im010 l+ u-
+                              # note the pointer to the pixel file
+        cl> epar imhead       # modify the task so it always types the long
+                                header listing - type yes after the parameter
+                                entry for "longheader" followed by a return
+            :q                # exit eparam mode and "save" the new parameters
+                                [exiting with crtl-C does NOT update the 
+                                parameter file}
+        cl> lpar imhead       # was the edited parameter saved?
+        cl> imhead im011 | page
+        cl> dir uparm         # what is the uparm directory used for?  Can you
+                                find the parameter file for "imheader"?  The
+                                name is a combination of the package (imutil)
+                                and task name, ie imlimhear.par.
+        cl> unlearn imhead    # go back to the default parameter setting
+        cl> dir uparm         # what just happened?
+        cl> imhead im010 l+ | page 
+                              # note the keyword "exptime"
+        cl> unlearn hselect
+        cl> lpar hselect 
+        cl> hselect im*.imh $I,exptime yes
+                              # see the help for hselect - it allows us
+                                to look at selected keywords from image
+                                headers
+        cl> unlearn hedit
+        cl> lpar hedit
+        cl> hedit im*.imh notice "test data" add+
+                              # add a keyword plus value to the headers of
+                                the two images - hit return after each query
+        cl> imhead im010 l+   # do you see the new keyword?
+        cl> hselect im*.imh $I,notice yes
+
+What have you learned about parameters?  What is the difference between
+query and hidden parameters?   What is the uparm directory?  Do you 
+understand the different syntaxes that we have been using in task executions?
+If you have questions see the Beginner's Guide mentioned below in the
+References section.
+
+A Short Exercise
+----------------
+
+There are 2 images in your directory, im010 and im011, of the same
+field, but one frame has been slightly shifted from the other.  We want
+to shift the second frame so it aligns with the first frame, and then
+average these two frames together.
+
+        cl> dir im*.imh       # note the two frames
+        cl> imhead im*.imh    # check to see if they are the same field
+        cl> unlearn display   
+        cl> lpar display      # look at the parameters for the display task
+        cl> display im010 1   # load the first image into the image display
+
+Let us diverge for a moment.  This is probably a good time to acquaint
+yourself with ximtool, if you have not used it before.  You should know
+how to zoom, pan, window, and blink.  All options are done with the mouse.
+Notice the pull down menus at the top of the window on the left side.  Pull
+each menu down and review the selections - use the left mouse button to pull
+down the menus.  At the top of the window on the right side are some point 
+and click options -  going from left to right are: activate the Control 
+panel, flip the image left to right, flip the image top to bottom, go to
+previous frame, the current frame number, go to the next frame, and a help
+button to view the man page.  At the bottom of the window on the right side
+are rough coordinates of the current cursor position as well as an estimate
+of the pixel value at that cursor position (this can be abled/disabled in
+the Options pull down menu or in the Control panel).  The large green box
+in the upper right corner is a "panner" box - it shows you what part of the
+image you are currently looking at - right now we are displaying the full
+image.
+
+The lookup table can be modified by moving the cursor up and down in the 
+window (contrast) or left and right (brightness) while holding down the right
+mouse button.  Try it.
+
+Panning and zooming are done with the middle mouse button.  Move the cursor to
+an interesting part of the image - click twice with the middle mouse button
+without moving the cursor.  Click again without moving the cursor.  If you move
+the cursor and then click, the region under the cursor is moved to the center
+of the window (panning).  If you click without moving the cursor then the 
+region is zoomed.  Play with this until you understand how it works.  Go back
+to the unzoomed image when you are finished.
+
+These same operations can be done with the Control panel - if you have not
+opened the Control panel yet, do so now and move it to a convenient place
+on your screen (or desktop).
+
+We want to blink this field and that of im011.  So we will need to load
+the second image into the second frame buffer - you have 4 frame buffers
+available for images.
+
+        cl> display im011 2
+
+Now try to match the lookup tables of both images. Adjust the contrast and
+brightness for the second image that you should be looking at now.  Use the
+Control panel to do this - twiddle things until you have black stars on a
+white sky background.  Using the Control panel again look at frame 1 (top
+left of panel).  Go back to frame 2 - push "Match LUTs" - go to frame 1 - they
+should have the same contrast and brightness now.  Then blink between the two
+frames by pressing the "Blink" button - adjust the blink rate if you wish.
+Notice the small shift between the frames?  Stop the blink mode.
+
+Play a bit with ximtool until you feel comfortable with it.  It has many more
+features that we will not cover here - see the document referenced at the end 
+of this exercise or the manual page available with the ? button.
+
+Now back to our original problem of computing and correcting for these shifts.
+
+        cl> display im010 1   # redisplay im010
+        cl> unlearn imexamine
+        cl> lpar imexamine    # we want to compute the shifts using this
+                                task interactively
+        cl> imexamine         # move the cursor into the ximtool window -
+                                notice that it has changed to a blinking 
+                                circle - imexamine has put us into "interactive
+                                image cursor mode" 
+
+        a. put the cursor on some stars and press the "a" key - information
+           will be printed in the xgterm window: the x-coord and y-coord 
+           values are on the first line with additional information on the
+           second line  - see the help page for imexamine for details
+
+        b. with the cursor in the image window type "?" to see the cursor help
+           - exit cursor help with "q" in the xgterm window 
+
+        c. what we would like to do is select 3 relatively bright stars
+           and measure their positions in both frames and then compute
+           the differences - we will use the average of the differences to
+           shift the second frame so it aligns with the first
+
+           mark 3 stars with the "a" key - space them over the image
+
+        d. with the cursor in the image window, type "d" - you will be queried
+           in the xgterm window for the next image - enter "im011" and frame "1"
+
+           measure the same three stars in this image 
+
+        e. quit "imexamine" with "q" in the ximtool window 
+
+
+Compute the average shift, ie what shift do we want to apply to the
+second image so that it aligns with the first?  The shifts that I computed
+are -0.53 and -1.68 - do you agree?
+
+        cl> lpar help
+        cl> help imshift sec=description  # look at just one part of the
+                                            help page for the task that
+                                            we want to use
+        cl> help imshift sec=example
+        cl> unlearn imshift
+        cl> lpar imshift
+        cl> imshift im011 s011 ??? ???    # shift im011 with the 
+                                            appropriate values
+
+Now, blink im010 and s011 and see if we did a good job.  Do you remember
+how to do this?  Congratulate yourself if things look ok!!
+
+Let's try a little image arithmetic now. We have two frames, im010
+and s011, that we want to average.  Let's do it two ways.
+
+        cl> unlearn imsum imarith
+
+    a.  cl> lpar imsum
+        cl> imsum im010,s011 aver1 pixt=r calct=r option=average v+
+            <or try "epar imsum", modify all of the parameters, and then
+             type ":go" >
+
+    [Note the concern here about the pixel type, both for the calculation
+    and for the output image.]
+
+    b.  cl> lpar imarith
+        cl> imarith im010 + s011 aver2 pixt=r calct=r v+
+            <try "epar imarith", edit all parameters, type ":go">
+        cl> imarith aver2 / 2 aver2       # notice we are overwriting the
+                                            input image
+
+    c. [Hopefully the results are the same for both operations.]
+
+        cl> unlearn imstatistics
+        cl> lpar imstat
+        cl> imstat aver*.imh
+
+Notice that when you change hidden parameters on the command line that they
+are NOT "learn"ed!  How do you "learn" parameters?
+
+History
+-------
+
+IRAF can redirect terminal output to a file, as well as pipe output from
+one task into the input of another task.  There is also a history and recall
+mechanism.
+
+        cl> history              # prints history tree
+        cl> ^                    # recall and execute last command, can also
+                                   include number to execute any task in tree
+        cl> e lpar               # recall last lpar command - allows you to edit
+                                   command line before executing with "return" -
+                                   use the arrow keys to move cursor, delete
+                                   or insert to the left of the cursor
+        cl> e                    # recall last command - use up/down arrows to
+                                   to go up/down history tree
+        cl> history 100          # look at last 100 commands
+        cl> history 100 > hfile  # redirect output to a file
+        cl> page hfile           # page the file
+        cl> history 100 | page   # alternate method avoiding intermediate
+                                   file
+
+What is the difference between ">" and "|" ?
+
+More on Plotting
+----------------
+
+Let's explore plotting in IRAF a bit.  Some plot tasks are interactive and
+others are not.  You can always replot whatever was in the last plot buffer
+and play with it.
+
+        cl> phelp plot           # list help for "plot" package
+        cl> contour s011         # make a contour plot of your shifted
+                                   image - if it is not already the frame
+                                   that you are looking at in the ximtool 
+                                   window, re-display it.  Compare the plot
+                                   with the displayed image
+
+        cl> =gcur                 # recall last plot and look at it 
+                                    interactively - we are now in "interactive
+                                    graphics cursor mode" - the cursor must
+                                    be in the plot window to accept commands
+            :.help                # these cursor options are available to
+                                    you in ALL plotting tasks in IRAF - they
+                                    are global cursor commands - quit the
+                                    help with a "q" in the text window
+
+            Z - place the cursor on a bright contour and type "Z"   
+
+            A - put axis on zoomed plot
+
+            C - place the cursor on a feature and print out the current 
+                cursor positions
+
+            0 - get full plot back
+
+            hitting any key other than the caps will exit
+
+        cl> surface s011          # draw a surface plot of the same image
+        cl> surface s011 >G meta  # save plot in a file
+
+        cl> implot s011           # this is an interactive plotting task that is
+                                    useful for inspecting 2-d images - type "?"
+                                    - note the cursor commands (small letters 
+                                    and : commands) - these will differ from 
+                                    task to task (if they are interactive) - 
+                                    they are NOT global
+
+            c - column plot, column read from cursor position
+
+            :l 100  - plot line 100
+
+            :c 150 200  - plot average of columns 150-200
+            :.write meta          # save plot in file
+
+            < spend some time becoming familiar with "implot" - you
+              will use it often - try the global keys as well>
+
+            how can you expand the plot other than with "Z"?  look at the
+            "e" key - put both cursors at the lower left corner of a box
+             defining the region you wish to zoom, press "e", then move
+             both cursors to the upper right corner of the box and press
+             "e" again
+
+            :l 100  - to get the full plot size back
+
+            q                     # exit
+
+        cl> implot dev$wpix       # plot the image that is distributed with
+                                    the IRAF system
+
+            :w world              # this image has RA and DEC information
+                                    stored in its header
+
+            :f %H                 # convert to hh:mm:ss
+            :.write meta
+            c                     # place the cursor on the middle of the
+                                    galaxy and type "c" to get a column plot
+            :f %h                 # convert to dd:mm:ss
+            :.write meta
+            q                     # exit
+
+We have saved several plots in a file called meta.  Let's look at those
+plots now.
+
+        cl> unlearn gkimosaic gkidir
+        cl> gkidir meta           # list plot file
+        cl> lpar gkimosaic
+        cl> gkimos meta           # plot the meta file
+            q                     # to quit plot mode
+        cl> gkimos dev$vdm.gki    # plot the distributed metacode file
+            <space bar>           # to continue to next set of plots
+            q                     # to quit plot mode
+
+For the next few minutes it may be profitable to spend a bit more time
+familiarizing yourself with the task IMEXAMINE, since it is such a powerful
+tool.
+
+        cl> display dev$pix 1          # this is the IRAF distributed
+                                         image, M51.  Wpix and pix are
+                                         the same image but wpix has the
+                                         world coordinate information
+                                         in its header 
+
+        [window the image until it looks good] 
+
+        cl> imexamine
+
+        [put the cursor on the star at 224, 131]
+            ?                          # list cursor options - type "q" in
+                                         the text window
+            z                          # print out pixel values around
+                                         cursor
+            m                          # print statistics within box
+
+        [move the cursor to a glob on a spiral arm
+            s                          # surface plot
+            :epar                      # edit the parameters for the last
+                                         plot - you must do this from the
+                                         ximtool window although the command
+                                         will appear in the graphics window -
+                                         exit epar mode in the xgterm window
+                                         with :q
+
+            l                          # plot a line
+            g                          # go to "interactive graphics
+                                         cursor mode" - the global cursor
+                                         keys can now be used to fuss
+                                         with the graphics plot
+            :naverage 10               # average 10 lines - since the graphics
+                                         window is now the active window type
+                                         this command in it
+
+            i                          # go back to "interactive image
+                                         cursor mode"
+             
+            [try other options]
+            q                          # quit the task - you can quit
+                                         in either interactive mode
+                 
+One last thing:  a pretty picture.  Let's overlay a grid in the ximtool 
+window on the image dev$wpix.
+
+        cl> display dev$wpix 1 xmag=0.8 ymag=0.8
+        cl> wcslab dev$wpix 1          # invert the image to black
+                                         background and window - if nothing
+                                         happens when the prompt returns type
+                                         "gflush"
+
+What did the xmag and ymag parameters do?
+
+If you are finished with this exercise you may want to clean your directory
+up a bit with the deletion commands.
+
+        cl> dir
+        cl> delete hfile,meta          # deletes ordinary files
+        cl> imdelete *.imh ver+        # deletes image files - you may
+                                         want to keep im*.imh around
+                                         but we will not be using them
+                                         again
+
+Do you know why there is a special IMDELETE command for the IRAF image?
+
+        cl> logout
+
+You should always log out of IRAF first before shutting down the window
+environment with the mouse.  Then log off the Unix system, if you wish.
+
+          % logout
+
+
+--------------------------------------------------------------------------------
+
+                                References
+
+A Beginner's Guide to Using IRAF, by Jeannette Barnes, August 1993.
+
+XIMTOOL Version 1.0 (December 10, 1996) document
+
+------------------------------end of exercise-----------------------------------
